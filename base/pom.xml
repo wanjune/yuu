@@ -5,13 +5,13 @@
     <parent>
         <groupId>com.github.wanjune</groupId>
         <artifactId>yuu</artifactId>
-        <version>${revision}</version>
+        <version>1.0.4</version>
     </parent>
 
     <groupId>com.github.wanjune.yuu</groupId>
     <artifactId>base</artifactId>
     <packaging>jar</packaging>
-    <version>${revision}</version>
+    <version>1.0.4</version>
 
     <name>base</name>
     <description>基盤</description>
