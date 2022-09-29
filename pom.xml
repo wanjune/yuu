@@ -94,18 +94,23 @@
                 <configuration>
                     <!-- 排除编译对象 -->
                     <excludes>
-                        <!-- Spring Boot 本地jar包引用工具类 -->
+                        <!-- Spring Boot 配置提示工具 -->
                         <exclude>
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-configuration-processor</artifactId>
                         </exclude>
-                        <!-- Lombok工具类 -->
+                        <!-- Spring Boot 开发工具 -->
+                        <exclude>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-devtools</artifactId>
+                        </exclude>
+                        <!-- Lombok工具 -->
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <!-- 使用本地jar包 -->
+                    <!-- 使用本地JAR包 -->
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
