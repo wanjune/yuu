@@ -4,7 +4,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
 /**
- * 通用加密、解密工具类
+ * 编码解码+消息摘要工具类
  *
  * @author wanjune
  * @since 2020-09-01
@@ -12,53 +12,63 @@ import org.apache.commons.codec.digest.DigestUtils;
 public class CodecUtil {
 
   /**
-   * base64Encode
+   * 将字符串进行base64编码
    *
-   * @param dataContextStr 待加密数据字符串
-   * @return 加密后的数据(字符串)
+   * @param contextString 待base64编码的字符串
+   * @return base64编码后的字符串
    */
-  public static String base64Encode(final String dataContextStr) {
-    return Base64.encodeBase64String(dataContextStr.getBytes());
+  public static String encodeBase64(final String contextString) {
+    return Base64.encodeBase64String(contextString.getBytes());
   }
 
   /**
-   * base64Decode
+   * base64数据字符串解码
    *
-   * @param dataEncContextStr 已加密类容字符串
-   * @return 解密后数据(字符串)
+   * @param base64DataString base64数据字符串
+   * @return base64解码后的字符串
    */
-  public static String base64Decode(final String dataEncContextStr) {
-    return new String(Base64.decodeBase64(dataEncContextStr.getBytes()));
+  public static String decodeBase64(final String base64DataString) {
+    return new String(Base64.decodeBase64(base64DataString.getBytes()));
   }
 
   /**
-   * md5
+   * 计算MD5摘要
    *
-   * @param dataContextStr 待加密数据字符串
-   * @return 加密后的数据(字符串)
+   * @param contextString 待处理字符串
+   * @return MD5摘要的2进制字符串
    */
-  public static String md5Hex(final String dataContextStr) {
-    return DigestUtils.md5Hex(dataContextStr);
+  public static String md5(final String contextString) {
+    return DigestUtils.md5Hex(contextString);
   }
 
   /**
-   * sha1Hex
+   * 计算SHA-1摘要
    *
-   * @param dataContextStr 待加密数据字符串
-   * @return 加密后的数据(字符串)
+   * @param contextString 待处理字符串
+   * @return SHA-1摘要的2进制字符串
    */
-  public static String sha1Hex(final String dataContextStr) {
-    return DigestUtils.sha1Hex(dataContextStr);
+  public static String sha1(final String contextString) {
+    return DigestUtils.sha1Hex(contextString);
   }
 
   /**
-   * sha256Hex
+   * 计算SHA-256摘要
    *
-   * @param dataContextStr 待加密数据字符串
-   * @return 加密后的数据(字符串)
+   * @param contextString 待处理字符串
+   * @return SHA-256摘要的2进制字符串
    */
-  public static String sha256Hex(final String dataContextStr) {
-    return DigestUtils.sha256Hex(dataContextStr);
+  public static String sha256(final String contextString) {
+    return DigestUtils.sha256Hex(contextString);
+  }
+
+  /**
+   * 计算SHA-512摘要
+   *
+   * @param contextString 待处理字符串
+   * @return SHA-512摘要的2进制字符串
+   */
+  public static String sha512(final String contextString) {
+    return DigestUtils.sha512Hex(contextString);
   }
 
 }

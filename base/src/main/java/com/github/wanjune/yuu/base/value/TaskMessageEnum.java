@@ -16,7 +16,8 @@ public enum TaskMessageEnum implements Messageable {
   OSS_ACCESS_FAILED(5009, "OSS Access Failed", "OSS服务异常-{ext}"),
   MAXCOMPUTE_ACCESS_FAILED(5010, "MaxCompute Access Failed", "MaxCompute服务异常-{ext}"),
   HOLOGRES_ACCESS_FAILED(5011, "Hologres Access Failed", "Hologres服务异常-{ext}"),
-  SFTP_ACCESS_FAILED(5012, "SFTP Access Failed", "SFTP服务异常-{ext}");
+  SFTP_ACCESS_FAILED(5012, "SFTP Access Failed", "SFTP服务异常-{ext}"),
+  OKHTTP_ACCESS_FAILED(5013, "OkHttp Access Failed", "调用外部接口异常-{ext}");
 
   // 状态码
   private final int code;

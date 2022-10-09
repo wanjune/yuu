@@ -11,7 +11,7 @@ import java.time.temporal.ChronoField;
 import java.util.Objects;
 
 /**
- * Date和DateTime工具类
+ * 日期和时间工具类
  *
  * @author wanjune
  * @since 2020-07-27
@@ -21,7 +21,7 @@ public class DateTimeUtil {
   /**
    * 日期格式-标准
    */
-  public static final String DF_STANDARD = "yyyy-MM-dd";
+  public static final String DF_STD = "yyyy-MM-dd";
 
   /**
    * 日期简格式-简单
@@ -29,38 +29,38 @@ public class DateTimeUtil {
   public static final String DF_SIMPLE = "yyyyMMdd";
 
   /**
-   * 时间格式-标准
+   * 日时格式-标准
    */
-  public static final String DTF_STANDARD = "yyyy-MM-dd HH:mm:ss";
+  public static final String DTF_STD = "yyyy-MM-dd HH:mm:ss";
 
   /**
-   * 时间格式-简单
+   * 日时格式-简单
    */
   public static final String DTF_SIMPLE = "yyyyMMddHHmmss";
 
   /**
-   * 时间格式-完整-标准
+   * 日时格式-完整-标准
    */
-  public static final String DTF_FULL_STANDARD = "yyyy-MM-dd HH:mm:ss.SSS";
+  public static final String DTF_FULL_STD = "yyyy-MM-dd HH:mm:ss.SSS";
 
   /**
-   * 时间格式-完整-简单
+   * 日时格式-完整-简单
    */
   public static final String DTF_FULL_SIMPLE = "yyyyMMddHHmmssSSS";
 
   /**
-   * 获取当前时间的UnixTimeStamp(毫秒)
+   * 获取当前日时的UnixTimeStamp(毫秒)
    *
-   * @return 当前时间的UnixTimeStamp
+   * @return 当前日时的UnixTimeStamp
    */
   public static Long getNowTimeStampMillis() {
     return System.currentTimeMillis();
   }
 
   /**
-   * 获取当前时间的UnixTimeStamp(秒)
+   * 获取当前日时的UnixTimeStamp(秒)
    *
-   * @return 当前时间的UnixTimeStamp
+   * @return 当前日时的UnixTimeStamp
    */
   public static Long getNowTimeStampSeconds() {
     return getNowTimeStampMillis() / 1000;
@@ -83,29 +83,30 @@ public class DateTimeUtil {
   }
 
   /**
-   * 获取系统当前日期的格式化字符串
+   * 获取系统当前日时的格式化字符串
    *
-   * @return 当前日期字符串
+   * @param dtFormat 日期格式
+   * @return 当前日时字符串
    */
   public static String getDateTimeNowFormat(String dtFormat) {
     return formatDateTime(getDateTimeNow(), dtFormat);
   }
 
   /**
-   * 获取系统当前日期
+   * 获取系统当前日时
    *
-   * @return 系统当前日期
+   * @return 系统当前日时
    */
   public static LocalDateTime getDateTimeNow() {
     return LocalDateTime.now();
   }
 
   /**
-   * 转换为是时间对象
+   * 转换为是日时对象
    *
-   * @param strDateTime 时间字符串
-   * @param dtFormat    时间格式
-   * @return 日期
+   * @param strDateTime 日时字符串
+   * @param dtFormat    日时格式
+   * @return 指定格式的日时字符串
    */
   public static LocalDateTime parseDateTime(String strDateTime, String dtFormat) {
     try {
@@ -137,7 +138,7 @@ public class DateTimeUtil {
    * 根据日期输出指定格式的字符串
    *
    * @param inLocalDate 指定日期
-   * @param dtFormat    指定格式
+   * @param dtFormat    日期格式
    * @return 指定格式的日期字符串
    */
   public static String formatDate(LocalDate inLocalDate, String dtFormat) {
@@ -145,11 +146,11 @@ public class DateTimeUtil {
   }
 
   /**
-   * 根据时间输出指定格式的字符串
+   * 根据日时输出指定格式的字符串
    *
-   * @param inLocalDateTime 指定时间
-   * @param dtFormat        指定格式
-   * @return 指定格式的日期字符串
+   * @param inLocalDateTime 指定日时
+   * @param dtFormat        日时格式
+   * @return 指定格式的日时字符串
    */
   public static String formatDateTime(LocalDateTime inLocalDateTime, String dtFormat) {
     DateTimeFormatter dateTimeFormatter;
@@ -175,10 +176,10 @@ public class DateTimeUtil {
   }
 
   /**
-   * 是合法的时间
+   * 是合法的日时
    *
-   * @param strDateTime 时间字符串
-   * @param dtFormat    时间格式
+   * @param strDateTime 日时字符串
+   * @param dtFormat    日时格式
    * @return 验证结果
    */
   public static boolean isDateTime(String strDateTime, String dtFormat) {
@@ -206,6 +207,7 @@ public class DateTimeUtil {
   /**
    * 获取系统当前日期的格式化字符串
    *
+   * @param dtFormat 日时格式
    * @return 当前日期的字符串
    */
   public static String getNowDateFormat(String dtFormat) {
@@ -213,8 +215,9 @@ public class DateTimeUtil {
   }
 
   /**
-   * 获取系统当前日期的格式化字符串
+   * 获取系统当前日时的格式化字符串
    *
+   * @param dtFormat 日时格式
    * @return 当前日期字符串
    */
   public static String getNowDateTimeFormat(String dtFormat) {
@@ -223,10 +226,10 @@ public class DateTimeUtil {
 
 
   /**
-   * 将Timestamp转换为时间对象
+   * 将Timestamp转换为日时对象
    *
    * @param longTimestamp Timestamp毫秒
-   * @return 时间对象
+   * @return 日时对象
    */
   public static LocalDateTime parseDateTime(Long longTimestamp) {
     try {
