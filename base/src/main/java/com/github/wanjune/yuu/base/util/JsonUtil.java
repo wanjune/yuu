@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Json字符串工具类
+ * JSON工具类
  *
  * @author wanjune
  * @since 2020-07-27
@@ -150,7 +150,7 @@ public class JsonUtil {
 
     Map<String, String> dataCsv = new HashMap<>(csvHeaderList.size());
     for (String key : csvHeaderList) {
-      if (StringUtil.isContainsIgnore(key, CSV_COLUMN_UNICODE_SPECIAL) && csvData.get(key) != null) {
+      if (StringUtil.isContains(key, CSV_COLUMN_UNICODE_SPECIAL, true) && csvData.get(key) != null) {
         csvData.put(key, writeValueAsString(StringUtil.cleanUnicode(csvData.get(key).toString())));
       } else if (csvData.get(key) != null) {
         csvData.put(key, writeValueAsString(csvData.get(key)));

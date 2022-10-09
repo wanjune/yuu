@@ -6,6 +6,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.io.FileOutputStream;
@@ -21,6 +22,7 @@ import java.util.Vector;
  * @author wanjune
  * @since 2020-10-27
  */
+@Component
 @Slf4j
 @SuppressWarnings("ALL")
 public class SftpUtil {

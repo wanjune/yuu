@@ -18,7 +18,7 @@ import java.util.Set;
 
 
 /**
- * Redis的String工具类
+ * Redis工具类
  *
  * @author wanjune
  * @since 2020-07-27

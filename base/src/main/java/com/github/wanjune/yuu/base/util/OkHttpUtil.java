@@ -7,6 +7,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+/**
+ * OkHttp工具类
+ *
+ * @author wanjune
+ * @since 2020-07-27
+ */
 @Component
 @Slf4j
 @SuppressWarnings("all")

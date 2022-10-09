@@ -5,6 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * Kafka工具类
+ *
+ * @author wanjune
+ * @since 2020-07-27
+ */
 @Component
 public class KafkaUtil {
 

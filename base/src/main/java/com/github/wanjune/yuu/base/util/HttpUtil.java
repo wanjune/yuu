@@ -7,6 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+/**
+ * HTTP工具类
+ *
+ * @author wanjune
+ * @since 2020-07-27
+ */
 public class HttpUtil {
 
   /**

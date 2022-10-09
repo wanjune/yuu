@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * 字符串工具类
+ * String工具类
  *
  * @author wanjune
  * @since 2020-07-27
@@ -20,33 +20,26 @@ public class StringUtil {
   private static final String CANDIDATE_RANDOM_STR = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private static final Random RANDOM = new Random();
   private static final int BOUND = 62;
+
   // Unicode正则表达式
   private static final String REGEX_UNICODE = "[^\\u0000-\\uFFFF]";
 
-  /**
-   * 强制取出String类型
-   * </p>解决字符串为NULL时,返回EMPTY
-   *
-   * @param strValue 字符串(可能为NULL)
-   * @return 字符串
-   */
-  public static String force(final String strValue) {
-    return StringUtil.isBlank(strValue) ? StringUtil.EMPTY : strValue;
-  }
-
-  /**
-   * 获取指定长度的随机字符串
-   *
-   * @param len 随机字符长度
-   * @return 随机字符串
-   */
-  public static String getRandomString(final int len) {
-    StringBuilder strBud = new StringBuilder();
-    for (int i = 0; i < len; i++) {
-      strBud.append(CANDIDATE_RANDOM_STR.charAt(RANDOM.nextInt(BOUND)));
-    }
-    return strBud.toString();
-  }
+  // 控制字符(ASCII): 0 ~ 31
+  private static final char ASCII_CTRL_END = 31;
+  // 半角[Space](ASCII): 32
+  private static final char ASCII_HALFWIDTH_SPACE = ' ';
+  // 半角(ASCII): [!](33) ~ [~](126)
+  private static final char ASCII_HALF_WIDTH_START = 33;
+  private static final char ASCII_HALF_WIDTH_END = 126;
+  // DEL(ASCII): 127
+  private static final char ASCII_DEL = 127;
+  // 全角[Space](ASCII): 12288
+  private static final char ASCII_FULL_WIDTH_SPACE = 12288;
+  // 全角(ASCII): [！](65281) ~ [～](65374)
+  private static final char ASCII_FULL_WIDTH_START = 65281;
+  private static final char ASCII_FULL_WIDTH_END = 65374;
+  // 全角和半角的偏移量
+  private static final int ASCII_HALF_TO_FULL_OFFSET = 65248;
 
   /**
    * 获取实际字符串(带参数的字符串以[{}]变量形式的参数，变为实际字符）
@@ -93,40 +86,19 @@ public class StringUtil {
     }
   }
 
-  ///**
-  // * 去除字符串首尾成对的符号
-  // * <p>头尾字符不同(中括号、大括号等)</p>
-  // *
-  // * @param strValue     待处理的字符串
-  // * @param strCharFirst 头字符
-  // * @param strCharLast  尾字符
-  // * @return 处理后的字符串
-  // */
-  //public static String trimFirstAndLastPairChar(final String strValue, final String strCharFirst, final String strCharLast) {
-  //  if (isEmpty(strValue) || length(strCharFirst) + length(strCharLast) < 2) {
-  //    return strValue;
-  //  }
-  //
-  //  if (StringUtil.isBlank(strValue) || !(strValue.startsWith(strCharFirst) && strValue.endsWith(strCharLast))) {
-  //    return strValue;
-  //  } else {
-  //    return strValue.substring(0, strValue.lastIndexOf(strCharLast)).substring(strValue.indexOf(strCharFirst) + 1);
-  //  }
-  //}
-
   /**
-   * 字符串是否包含特定的字符
-   * <p>完全相同</p>
+   * 字符串是否包含特定的字符串
    *
    * @param strValue   待判断的字符串
    * @param searchList 检索包含的对象列表
+   * @param isIgnore   是否忽略大小写
    * @return 判断结果
    */
-  public static boolean isContains(final String strValue, final List<String> searchList) {
+  public static boolean isContains(final String strValue, final List<String> searchList, boolean isIgnore) {
     boolean isContained = false;
-    if (StringUtil.isNotBlank(strValue) && ListUtil.nonEmpty(searchList)) {
+    if (isNotBlank(strValue) && ListUtil.nonEmpty(searchList)) {
       for (String searchItem : searchList) {
-        if (strValue.contains(searchItem)) {
+        if ((isIgnore && strValue.toLowerCase().contains(searchItem.toLowerCase())) || strValue.contains(searchItem)) {
           isContained = true;
           break;
         }
@@ -135,70 +107,138 @@ public class StringUtil {
     return isContained;
   }
 
+
   /**
-   * 字符串是否包含特定的字符
-   * <p>忽略大小写</p>
+   * 将字符串中所有半角字符转换为全角字符
    *
-   * @param strValue   待判断的字符串
-   * @param searchList 检索包含的对象列表
-   * @return 判断结果
+   * @param characters: 包含半角字符的字符串
+   * @return 全角字符串
    */
-  public static boolean isContainsIgnore(final String strValue, final List<String> searchList) {
-    boolean isContained = false;
-    if (StringUtil.isNotBlank(strValue) && ListUtil.nonEmpty(searchList)) {
-      for (String searchItem : searchList) {
-        if (strValue.toLowerCase().contains(searchItem.toLowerCase())) {
-          isContained = true;
-          break;
-        }
+  public static String toFullwidth(String characters) {
+    if (isEmpty(characters)) {
+      return characters;
+    }
+    StringBuilder sbBuffer = new StringBuilder(characters.length());
+    char[] charItemArray = characters.toCharArray();
+    for (char charItem : charItemArray) {
+      if (ASCII_HALFWIDTH_SPACE == charItem) {
+        // 半角[Space](ASCII): 32
+        sbBuffer.append(ASCII_FULL_WIDTH_SPACE);
+      } else if ((charItem >= ASCII_HALF_WIDTH_START) && (charItem <= ASCII_HALF_WIDTH_END)) {
+        // 半角(ASCII): [!](33) ~ [~](126)
+        sbBuffer.append((char) (charItem + ASCII_HALF_TO_FULL_OFFSET));
+      } else {
+        // Others
+        sbBuffer.append(charItem);
       }
     }
-    return isContained;
+    return sbBuffer.toString();
   }
 
   /**
-   * 删除Unicode字符和控制字符
+   * 将字符串中所有全角字符转换为半角字符
    *
-   * @param strValue 待处理字符串
-   * @return 返回剔除Unicode字符和控制字符后的字符串
+   * @param characters: 包含全角字符的字符串
+   * @return 半角字符串
    */
-  public static String cleanUnicodeAndControl(final String strValue) {
-    return cleanControl(cleanUnicode(strValue));
+  public static String toHalfwidth(String characters) {
+    if (isEmpty(characters)) {
+      return characters;
+    }
+    StringBuilder sbBuffer = new StringBuilder(characters.length());
+    char[] charItemArray = characters.toCharArray();
+    for (char charItem : charItemArray) {
+      if (ASCII_FULL_WIDTH_SPACE == charItem) {
+        // 全角[Space](ASCII): 12288
+        sbBuffer.append(ASCII_HALFWIDTH_SPACE);
+      } else if (charItem >= ASCII_FULL_WIDTH_START && charItem <= ASCII_FULL_WIDTH_END) {
+        // 全角(ASCII): [！](65281) ~ [～](65374)
+        sbBuffer.append((char) (charItem - ASCII_HALF_TO_FULL_OFFSET));
+      } else {
+        sbBuffer.append(charItem);
+      }
+    }
+    return sbBuffer.toString();
   }
 
   /**
    * 删除Unicode字符
+   * <p>正则表达式[^\u0000-\uFFFF]</p>
    *
    * @param strValue 待处理字符串
    * @return 返回剔除Unicode字符后的字符串
    */
   public static String cleanUnicode(final String strValue) {
-    if (StringUtil.isNotBlank(strValue) && !StringUtil.NULL.equalsIgnoreCase(strValue.trim())) {
-      return strValue.replaceAll(REGEX_UNICODE, StringUtil.EMPTY).replaceAll(REGEX_UNICODE, StringUtil.EMPTY).trim();
+    if (isNotBlank(strValue) && !NULL.equalsIgnoreCase(strValue.trim())) {
+      return strValue.replaceAll(REGEX_UNICODE, EMPTY).replaceAll(REGEX_UNICODE, EMPTY).trim();
     } else {
-      return StringUtil.NULL.equalsIgnoreCase(strValue) ? null : strValue;
+      return NULL.equalsIgnoreCase(strValue) ? null : strValue;
     }
   }
 
   /**
    * 删除控制字符
-   * <p>对应ASCII码表(0~31和127)</p>
-   * <p>NUL,SOH,STX,ETX,EOT,ENQ,ACK,BEL,BS,HT,LF,VT,FF,CR,SO,SI,DLE,DC1,DC2,DC3,DC4,NAK,SYN,ETB,CAN,EM,SUB,ESC,FS,GS,RS,US,DEL</p>
+   * <p>删除控制字符(ASCII)[0 ~ 31]和DEL(ASCII):[127]</p>
    *
    * @param strValue 待处理字符串
    * @return 返回剔除控制字符后的字符串
    */
   public static String cleanControl(final String strValue) {
-    if (StringUtil.isNotBlank(strValue) && !StringUtil.NULL.equalsIgnoreCase(strValue.trim())) {
-      StringBuilder sbResult = new StringBuilder(StringUtil.EMPTY);
+    if (isNotBlank(strValue) && !NULL.equalsIgnoreCase(strValue.trim())) {
+      StringBuilder sbResult = new StringBuilder(EMPTY);
       for (int i = 0; i < strValue.length(); i++) {
-        if (strValue.charAt(i) > 31 && strValue.charAt(i) != 127) {
+        if (strValue.charAt(i) > ASCII_CTRL_END && strValue.charAt(i) != ASCII_DEL) {
           sbResult.append(strValue.charAt(i));
         }
       }
-      return StringUtil.NULL.equalsIgnoreCase(sbResult.toString()) ? null : sbResult.toString();
+      return NULL.equalsIgnoreCase(sbResult.toString()) ? null : sbResult.toString();
     }
     return strValue;
+  }
+
+  /**
+   * 清理文本
+   * <p>1.全角转半角;2.删除控制字符(包含DEL);3.删除空格</p>
+   *
+   * @param strValue: 待处理字符串
+   * @return 清理后的字符串
+   */
+  @SuppressWarnings("ALL")
+  public static String cleanText(final String strValue) {
+    if (isNotEmpty(strValue)) {
+      String strText = cleanControl(toHalfwidth(strValue));
+      if (isNotEmpty(strText)) {
+        strText = cleanControl(toHalfwidth(strValue)).replaceAll(String.valueOf(ASCII_HALFWIDTH_SPACE), EMPTY);
+      }
+      return NULL.equalsIgnoreCase(strText) ? null : strText;
+    }
+    return strValue;
+  }
+
+
+  /**
+   * 强制取出String类型
+   * </p>解决字符串为NULL时,返回EMPTY
+   *
+   * @param strValue 字符串(可能为NULL)
+   * @return 字符串
+   */
+  public static String force(final String strValue) {
+    return isBlank(strValue) ? EMPTY : strValue;
+  }
+
+  /**
+   * 获取指定长度的随机字符串
+   *
+   * @param len 随机字符长度
+   * @return 随机字符串
+   */
+  public static String getRandomString(final int len) {
+    StringBuilder strBud = new StringBuilder();
+    for (int i = 0; i < len; i++) {
+      strBud.append(CANDIDATE_RANDOM_STR.charAt(RANDOM.nextInt(BOUND)));
+    }
+    return strBud.toString();
   }
 
   /**
@@ -226,14 +266,11 @@ public class StringUtil {
    * @return 字符串
    */
   public static <T> String getSplitString(List<T> listObj, String split) {
-
-    String strResult = StringUtil.EMPTY;
-
+    String strResult = EMPTY;
     if (ListUtil.nonEmpty(listObj)) {
       if (listObj.size() == 1) {
         return String.valueOf(listObj.get(0));
       }
-
       for (int i = 0; i < listObj.size(); i++) {
         if (i > 0) {
           strResult = strResult.concat(split);
@@ -241,7 +278,6 @@ public class StringUtil {
         strResult = strResult.concat(String.valueOf(listObj.get(i)));
       }
     }
-
     return strResult;
   }
 
