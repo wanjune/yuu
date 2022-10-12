@@ -174,7 +174,7 @@ public class FileUtil {
    *
    * @param filePathList    待合并的文件路径列表
    * @param combineFilePath 合并后的文件路径
-   * @param isNewLine 是否换新行拼接文件
+   * @param isNewLine       是否换新行拼接文件
    * @throws Exception Exception
    */
   public static void combine(List<String> filePathList, String combineFilePath, boolean isNewLine) throws Exception {
@@ -198,7 +198,7 @@ public class FileUtil {
           outputStream.write(buffer, 0, bufLen);
         }
         // 是否需要换新行
-        if(isNewLine && i != filePathList.size() - 1) {
+        if (isNewLine && i != filePathList.size() - 1) {
           outputStream.write('\n');
         }
         // 关闭读取的文件流

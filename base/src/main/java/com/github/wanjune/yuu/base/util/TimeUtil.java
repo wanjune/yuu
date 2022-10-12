@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 日期和时间工具类
@@ -60,12 +59,12 @@ public class TimeUtil {
    * 日期格式-列表
    */
   private static final List<String> FMT_D_LIST = Arrays.asList("yyyy-MM-dd", "yyyyMMdd", "yyyy年MM月dd日", "yyyy/MM/dd",
-      "dd/MM/yyyy", "dd MMMM yyyy", "MM-dd-yyyy");
+      "dd/MM/yyyy", "MM-dd-yyyy");
   /**
    * 日时格式-列表
    */
-  private static final List<String> FMT_DT_LIST = Arrays.asList("yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyyMMddHHmmss",
-      "yyyy-MM-dd HH:mm:ss.SSS", "yyyyMMddHHmmssSSS", "dd-M-yyyy hh:mm:ss");
+  private static final List<String> FMT_DT_LIST = Arrays.asList("yyyy-MM-dd HH:mm:ss", "yyyyMMddHHmmss",
+      "yyyy-MM-dd HH:mm:ss.SSS", "yyyyMMddHHmmssSSS", "dd-M-yyyy hh:mm:ss", "yyyy-MM-dd HH:mm");
 
   /**
    * 获取当前日时的UnixTimeStamp(毫秒)
@@ -191,25 +190,7 @@ public class TimeUtil {
    * @return 验证结果
    */
   public static boolean isDateTime(String strDateTime, String dtFormat) {
-    return Objects.nonNull(parseDateTime(strDateTime, dtFormat));
-  }
-
-  /**
-   * 获取系统当前日期
-   *
-   * @return 系统当前日期
-   */
-  public static LocalDate getNowDate() {
-    return LocalDate.now();
-  }
-
-  /**
-   * 获取系统当前日时
-   *
-   * @return 系统当前日时
-   */
-  public static LocalDateTime getNowDateTime() {
-    return LocalDateTime.now();
+    return parseDateTime(strDateTime, dtFormat) != null;
   }
 
   /**
@@ -218,8 +199,8 @@ public class TimeUtil {
    * @param dtFormat 日时格式
    * @return 当前日期的字符串
    */
-  public static String getNowDateFormat(String dtFormat) {
-    return formatDate(getNowDate(), dtFormat);
+  public static String getDateNowFormat(String dtFormat) {
+    return formatDate(getDateNow(), dtFormat);
   }
 
   /**
@@ -229,16 +210,6 @@ public class TimeUtil {
    */
   public static LocalDate getDateNow() {
     return LocalDate.now();
-  }
-
-  /**
-   * 获取系统当前日时的格式化字符串
-   *
-   * @param dtFormat 日时格式
-   * @return 当前日期字符串
-   */
-  public static String getNowDateTimeFormat(String dtFormat) {
-    return formatDateTime(getNowDateTime(), dtFormat);
   }
 
   /**
@@ -298,7 +269,7 @@ public class TimeUtil {
    * @return 验证结果
    */
   public static boolean isDate(String strDate, String dtFormat) {
-    return Objects.nonNull(parseDate(strDate, dtFormat));
+    return parseDate(strDate, dtFormat) != null;
   }
 
   /**
@@ -351,7 +322,7 @@ public class TimeUtil {
       quarter = "4";
     }
 
-    return strQrFormat.replace("QR", "Q".concat(quarter)).replace("qr", quarter).toLowerCase().replace("yyyy", year);
+    return strQrFormat.replace("yyyy", year).replace("QR", "Q".concat(quarter)).replace("qr", quarter);
   }
 
 }

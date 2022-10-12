@@ -14,6 +14,13 @@ class FileUtilTest {
 
   private static final String FILE_PATH_3 = DIR_PATH + FileUtil.SEPARATOR + "20221013/1410." + FileUtil.EXT_CSV;
 
+  @AfterAll
+  public static void tearDown() throws Exception {
+    FileUtil.delete(FileUtil.getParentDirPath(FILE_PATH_1));
+    FileUtil.delete(FileUtil.getParentDirPath(FILE_PATH_2));
+    FileUtil.delete(FileUtil.getParentDirPath(FILE_PATH_3));
+  }
+
   @BeforeEach
   private void setUp() {
     FileUtil.delete(FILE_PATH_1);
@@ -101,18 +108,11 @@ class FileUtilTest {
 
   }
 
-  @AfterAll
-  public static void tearDown() throws Exception {
-    FileUtil.delete(FileUtil.getParentDirPath(FILE_PATH_1));
-    FileUtil.delete(FileUtil.getParentDirPath(FILE_PATH_2));
-    FileUtil.delete(FileUtil.getParentDirPath(FILE_PATH_3));
-  }
-
   private void fileWrite(String filePath) {
     try {
       FileUtil.create(filePath); // 创建上级目录
       BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
-      out.write(TimeUtil.getNowDateTimeFormat(TimeUtil.FMT_DT_FULL_SIMPLE));
+      out.write(TimeUtil.getDateTimeNowFormat(TimeUtil.FMT_DT_FULL_SIMPLE));
       out.close();
     } catch (IOException e) {
       // Nothing
