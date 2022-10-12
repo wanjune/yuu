@@ -19,11 +19,11 @@ import java.util.List;
 @Slf4j
 public class FileUtil {
 
-  public static final String FILE_SEPARATOR = "/";
-  public static final String FILE_EXT_TXT = "txt";
-  public static final String FILE_EXT_GZ = "gz";
-  public static final String FILE_EXT_CSV = "csv";
-  public static final int BUFFER_SIZE = 4096;
+  public static final String SEPARATOR = "/";
+  public static final String EXT_TXT = "txt";
+  public static final String EXT_GZ = "gz";
+  public static final String EXT_CSV = "csv";
+  public static final int BUF_SIZE = 4096;
 
   /**
    * 文件或目录是否存在
@@ -36,9 +36,9 @@ public class FileUtil {
   }
 
   /**
-   * 创建文件</p>
-   * 如果上级目录不存在,创建上级目录</br>
-   * 与New File(),多一个创建上级目录,避免出现异常
+   * 创建文件
+   * <p>如果上级目录不存在,创建上级目录</p>
+   * <p>相对[new File()]多一个创建上级目录,避免出现异常</p>
    *
    * @param filePath 文件路径
    */
@@ -103,8 +103,8 @@ public class FileUtil {
    */
   public static String getParentDirPath(String filePath) {
     try {
-      String strFilePath = filePath.replaceAll("\\\\", FILE_SEPARATOR);
-      return strFilePath.substring(0, strFilePath.lastIndexOf(FILE_SEPARATOR));
+      String strFilePath = filePath.replaceAll("\\\\", SEPARATOR);
+      return strFilePath.substring(0, strFilePath.lastIndexOf(SEPARATOR));
     } catch (Exception ex) {
       return null;
     }
@@ -118,7 +118,7 @@ public class FileUtil {
    * @return 文件路径
    */
   public static String getChildFilePath(String dirPath, String fileName) {
-    return dirPath + FILE_SEPARATOR + fileName;
+    return dirPath + SEPARATOR + fileName;
   }
 
   /**
@@ -174,9 +174,10 @@ public class FileUtil {
    *
    * @param filePathList    待合并的文件路径列表
    * @param combineFilePath 合并后的文件路径
+   * @param isNewLine 是否换新行拼接文件
    * @throws Exception Exception
    */
-  public static void combine(List<String> filePathList, String combineFilePath) throws Exception {
+  public static void combine(List<String> filePathList, String combineFilePath, boolean isNewLine) throws Exception {
 
     BufferedOutputStream outputStream = null;
     BufferedInputStream inputStream = null;
@@ -184,24 +185,26 @@ public class FileUtil {
     log.info(String.format("[%s]文件合并,处理开始!", "combine"));
 
     try {
+      create(combineFilePath); // 目的 -> 上级目录创建
       outputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(combineFilePath)));
+      byte[] buffer = new byte[BUF_SIZE];
+      int bufLen;
 
-      byte[] buffer = new byte[BUFFER_SIZE];
-
-      for (String iFilePath : filePathList) {
-
+      for (int i = 0; i < filePathList.size(); i++) {
         // 读取文件流
-        inputStream = new BufferedInputStream(Files.newInputStream(Paths.get(iFilePath)));
-
+        inputStream = new BufferedInputStream(Files.newInputStream(Paths.get(filePathList.get(i))));
         // 合并文件
-        int len;
-        while ((len = inputStream.read(buffer)) > 0) {
-          outputStream.write(buffer, 0, len);
+        while ((bufLen = inputStream.read(buffer)) > 0) {
+          outputStream.write(buffer, 0, bufLen);
         }
-
+        // 是否需要换新行
+        if(isNewLine && i != filePathList.size() - 1) {
+          outputStream.write('\n');
+        }
         // 关闭读取的文件流
-        log.info(String.format("[%s]已合并文件,源文件:[%s] -> 目标文件[%s]!", "combine", iFilePath, combineFilePath));
         inputStream.close();
+
+        log.info(String.format("[%s]已合并文件,源文件:[%s] -> 目标文件[%s]!", "combine", filePathList.get(i), combineFilePath));
       }
     } catch (Exception ex) {
       log.error(String.format("[%s]文件合并,处理异常!", "combine"), ex);
