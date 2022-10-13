@@ -250,7 +250,6 @@ public class StringUtil {
    * @param <T>     列表中元素对象类型
    * @return 字符串
    */
-
   public static <T> String getSplitString(List<T> listObj) {
     return getSplitString(listObj, CstUtil.COMMA);
   }

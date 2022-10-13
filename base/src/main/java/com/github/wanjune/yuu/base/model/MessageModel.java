@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Messge消息扩展
@@ -39,7 +38,7 @@ public class MessageModel implements Serializable {
 
   public MessageModel(Messageable message, Object objExt) {
     this.code = message.code();
-    if (Objects.isNull(objExt)) {
+    if (objExt == null) {
       this.message = message.message();
     } else if (objExt instanceof String) {
       this.message = StringUtil.instance(message.message(), MapUtil.of(VAR_EXT, (String) objExt));

@@ -118,4 +118,18 @@ public class ListUtil {
     return isEmpty(list) ? 0 : list.size();
   }
 
+  /**
+   * 获取单态元素
+   * <p>如果对象列表只有1个元素返回单个元素</p>
+   * <p>避免转换JSON时单个元素使用JSON格式数组</p>
+   *
+   * @param listObj 数据列表对象
+   * @param <T>     列表中元素对象类型
+   * @return 单个元素 或 元素列表
+   */
+  public static <T> Object getSingleton(List<T> listObj) {
+    return ListUtil.isEmpty(listObj) ? null : (listObj.size() == 1 ? listObj.get(0) : listObj);
+  }
+
+
 }
