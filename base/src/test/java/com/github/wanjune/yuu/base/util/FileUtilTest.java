@@ -105,7 +105,6 @@ class FileUtilTest {
 
     FileUtil.delete(FileUtil.create(FILE_PATH_3));
     Assertions.assertFalse(FileUtil.isExist(FILE_PATH_3));
-
   }
 
   private void fileWrite(String filePath) {

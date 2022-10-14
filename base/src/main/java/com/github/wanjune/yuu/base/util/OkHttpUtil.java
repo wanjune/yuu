@@ -27,6 +27,8 @@ public class OkHttpUtil {
   public static final String DELETE = "DELETE";
   public static final String PATCH = "PATCH";
 
+  public static final String NOT_RESPONDING = "Not Responding";
+
   private final OkHttpClient okHttpClient;
   private boolean isPrintLog;
 
@@ -42,7 +44,7 @@ public class OkHttpUtil {
 
   /**
    * 请求处理
-   * 普通字符串对象(上传文件等需要重构)
+   * <p>普通字符串对象(上传文件等需要重构)</p>
    *
    * @param method    请求方法(GET/HEAD/POST/DELETE/PUT/PATCH)
    * @param url       请求URL
@@ -63,7 +65,7 @@ public class OkHttpUtil {
     // 完整请求地址(包含URL部参数)
     StringBuilder sbUrlFull = new StringBuilder(url);
     // 接口响应信息Body内容
-    String strResBody = StringUtil.EMPTY;
+    String strResBody = NOT_RESPONDING;
 
     try {
       // Request构建器
@@ -108,7 +110,7 @@ public class OkHttpUtil {
     } catch (Exception ex) {
       log.error(String.format("[%s]外部接口请求发生异常!\n[url]:\t%s\n[method]:\t%s\n[headers]:\t%s\n[body]:\t%s\n[响应body]:\t%s",
           "execute", sbUrlFull.toString(), method, headers, body, strResBody), ex);
-      throw new OkHttpException(String.format("请求失败[url:%s,method:%s,headers:%s,body:%s,响应body:%s]",
+      throw new OkHttpException(String.format("外部接口请求失败[url:%s,method:%s,headers:%s,body:%s,响应body:%s]",
           sbUrlFull.toString(), method, headers, body, strResBody), ex);
     }
 

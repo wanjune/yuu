@@ -128,7 +128,6 @@ public class StringUtil {
     }
   }
 
-
   /**
    * 将字符串中所有半角字符转换为全角字符
    *
@@ -191,7 +190,8 @@ public class StringUtil {
    */
   public static String cleanUnicode(final String strValue) {
     if (isNotBlank(strValue) && !NULL.equalsIgnoreCase(strValue.trim())) {
-      return strValue.replaceAll(REGEX_UNICODE, EMPTY).replaceAll(REGEX_UNICODE, EMPTY).trim();
+      String strText = strValue.replaceAll(REGEX_UNICODE, EMPTY).replaceAll(REGEX_UNICODE, EMPTY).trim();
+      return NULL.equalsIgnoreCase(strText) ? null : strText;
     } else {
       return NULL.equalsIgnoreCase(strValue) ? null : strValue;
     }
@@ -213,8 +213,9 @@ public class StringUtil {
         }
       }
       return NULL.equalsIgnoreCase(sbResult.toString()) ? null : sbResult.toString();
+    } else {
+      return NULL.equalsIgnoreCase(strValue) ? null : strValue;
     }
-    return strValue;
   }
 
   /**
@@ -226,19 +227,20 @@ public class StringUtil {
    */
   @SuppressWarnings("ALL")
   public static String cleanText(final String strValue) {
-    if (isNotEmpty(strValue)) {
+    if (isNotEmpty(strValue) && !NULL.equalsIgnoreCase(strValue.trim())) {
       String strText = cleanControl(toHalfwidth(strValue));
       if (isNotEmpty(strText)) {
-        strText = cleanControl(toHalfwidth(strValue)).replaceAll(String.valueOf(ASCII_HALFWIDTH_SPACE), EMPTY);
+        strText = strText.replaceAll(String.valueOf(ASCII_HALFWIDTH_SPACE), EMPTY);
       }
       return NULL.equalsIgnoreCase(strText) ? null : strText;
+    } else {
+      return NULL.equalsIgnoreCase(strValue) ? null : strValue;
     }
-    return strValue;
   }
-
 
   /**
    * 获取指定长度的随机字符串
+   * <p>abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</p>
    *
    * @param len 随机字符长度
    * @return 随机字符串
@@ -338,6 +340,5 @@ public class StringUtil {
   public static boolean isNotEmpty(final CharSequence cs) {
     return !isEmpty(cs);
   }
-
 
 }
