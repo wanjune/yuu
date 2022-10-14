@@ -42,6 +42,27 @@ public class StringUtil {
   private static final int ASCII_HALF_TO_FULL_OFFSET = 65248;
 
   /**
+   * 字符串长度
+   *
+   * @param cs 被检测字符串
+   * @return 字符串长度
+   */
+  public static int length(final CharSequence cs) {
+    return cs == null ? 0 : cs.length();
+  }
+
+  /**
+   * 强制取出String类型
+   * </p>解决字符串为NULL时,返回EMPTY
+   *
+   * @param strValue 字符串(可能为NULL)
+   * @return 字符串
+   */
+  public static String force(final String strValue) {
+    return isBlank(strValue) ? EMPTY : strValue;
+  }
+
+  /**
    * 获取实际字符串(带参数的字符串以[{}]变量形式的参数，变为实际字符）
    *
    * @param strVar   带参数变量的字符串
@@ -54,6 +75,27 @@ public class StringUtil {
       strResult = strResult.replaceAll(CstUtil.CURLY_BRACKET_PREFIX + itemKey + CstUtil.CURLY_BRACKET_SUFFIX, objParam.get(itemKey).toString());
     }
     return strResult;
+  }
+
+  /**
+   * 字符串是否包含特定的字符串
+   *
+   * @param strValue   待判断的字符串
+   * @param searchList 检索包含的对象列表
+   * @param isIgnore   是否忽略大小写
+   * @return 判断结果
+   */
+  public static boolean isContains(final String strValue, final List<String> searchList, boolean isIgnore) {
+    boolean isContained = false;
+    if (isNotBlank(strValue) && ListUtil.nonEmpty(searchList)) {
+      for (String searchItem : searchList) {
+        if ((isIgnore && strValue.toLowerCase().contains(searchItem.toLowerCase())) || strValue.contains(searchItem)) {
+          isContained = true;
+          break;
+        }
+      }
+    }
+    return isContained;
   }
 
   /**
@@ -82,29 +124,8 @@ public class StringUtil {
     if (isBlank(strCharFirst) || isBlank(strCharLast) || !(strValue.startsWith(strCharFirst) && strValue.endsWith(strCharLast))) {
       return strValue;
     } else {
-      return strValue.substring(0, strValue.lastIndexOf(strChar)).substring(strValue.indexOf(strChar) + 1);
+      return strValue.substring(0, strValue.lastIndexOf(strCharLast)).substring(strValue.indexOf(strCharFirst) + 1);
     }
-  }
-
-  /**
-   * 字符串是否包含特定的字符串
-   *
-   * @param strValue   待判断的字符串
-   * @param searchList 检索包含的对象列表
-   * @param isIgnore   是否忽略大小写
-   * @return 判断结果
-   */
-  public static boolean isContains(final String strValue, final List<String> searchList, boolean isIgnore) {
-    boolean isContained = false;
-    if (isNotBlank(strValue) && ListUtil.nonEmpty(searchList)) {
-      for (String searchItem : searchList) {
-        if ((isIgnore && strValue.toLowerCase().contains(searchItem.toLowerCase())) || strValue.contains(searchItem)) {
-          isContained = true;
-          break;
-        }
-      }
-    }
-    return isContained;
   }
 
 
@@ -217,17 +238,6 @@ public class StringUtil {
 
 
   /**
-   * 强制取出String类型
-   * </p>解决字符串为NULL时,返回EMPTY
-   *
-   * @param strValue 字符串(可能为NULL)
-   * @return 字符串
-   */
-  public static String force(final String strValue) {
-    return isBlank(strValue) ? EMPTY : strValue;
-  }
-
-  /**
    * 获取指定长度的随机字符串
    *
    * @param len 随机字符长度
@@ -329,14 +339,5 @@ public class StringUtil {
     return !isEmpty(cs);
   }
 
-  /**
-   * 字符串长度
-   *
-   * @param cs 被检测字符串
-   * @return 字符串长度
-   */
-  public static int length(final CharSequence cs) {
-    return cs == null ? 0 : cs.length();
-  }
 
 }

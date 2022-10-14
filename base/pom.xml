@@ -19,6 +19,7 @@
     <!-- 编译配置 -->
     <build>
         <plugins>
+
             <!-- 可执行Jar文件名以[-exec]结尾 -->
             <plugin>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -27,6 +28,21 @@
                     <classifier>exec</classifier>
                 </configuration>
             </plugin>
+
+<!--            &lt;!&ndash; jar打包插件 &ndash;&gt;-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jar-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash; 排除打包对象 &ndash;&gt;-->
+<!--                    <excludes>-->
+<!--                        &lt;!&ndash; OSS工具类 &ndash;&gt;-->
+<!--                        <exclude>com/github/wanjune/yuu/base/exception/OssException.class</exclude>-->
+<!--                        <exclude>com/github/wanjune/yuu/base/util/OssUtil.class</exclude>-->
+<!--                    </excludes>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+
             <!-- sources打包插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

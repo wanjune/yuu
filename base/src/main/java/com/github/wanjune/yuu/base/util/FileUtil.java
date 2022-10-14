@@ -42,15 +42,11 @@ public class FileUtil {
    *
    * @param filePath 文件路径
    */
+  @SuppressWarnings("ALL")
   public static File create(String filePath) {
     try {
       File file = new File(filePath);
-
-      // 创建文件目录
-      if (!file.getParentFile().exists()) {
-        file.getParentFile().mkdirs();
-      }
-
+      file.getParentFile().mkdirs(); // 创建文件目录
       return file;
     } catch (Exception ex) {
       throw new RuntimeException(String.format("创建文件[%s]失败", filePath), ex);
@@ -75,6 +71,7 @@ public class FileUtil {
    *
    * @param file 要删除的文件或目录
    */
+  @SuppressWarnings("ALL")
   public static void delete(File file) {
     try {
       if (file.exists()) {
@@ -87,7 +84,6 @@ public class FileUtil {
             }
           }
         }
-
         file.delete();
       }
     } catch (Exception ex) {
@@ -101,7 +97,7 @@ public class FileUtil {
    * @param filePath 文件路径
    * @return 上级目录
    */
-  public static String getParentDirPath(String filePath) {
+  public static String getParentPath(String filePath) {
     try {
       String strFilePath = filePath.replaceAll("\\\\", SEPARATOR);
       return strFilePath.substring(0, strFilePath.lastIndexOf(SEPARATOR));
@@ -117,7 +113,7 @@ public class FileUtil {
    * @param fileName 文件全名(包括扩展名)
    * @return 文件路径
    */
-  public static String getChildFilePath(String dirPath, String fileName) {
+  public static String getChildPath(String dirPath, String fileName) {
     return dirPath + SEPARATOR + fileName;
   }
 
@@ -145,8 +141,7 @@ public class FileUtil {
    */
   public static List<String> getChildFilePathList(String dirPath, String ext) {
 
-    List<String> filePathList = new ArrayList<String>();
-
+    List<String> filePathList = new ArrayList<>();
     File dirFile = new File(dirPath);
 
     if (dirFile.exists() && dirFile.isDirectory()) {

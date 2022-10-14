@@ -130,7 +130,7 @@ public class SftpUtil {
           if ((null == excludeFileNameList || !excludeFileNameList.contains(iFileName)) &&
               (null == extList || extList.contains(FileUtil.getExtension(iFileName).toLowerCase())) &&
               !iFileName.startsWith(EXCLUDE_PREFIX)) {
-            download(FileUtil.getChildFilePath(sftpFilePath, iFileName), FileUtil.getChildFilePath(localFilePath, iFileName), excludeFileNameList, extList);
+            download(FileUtil.getChildPath(sftpFilePath, iFileName), FileUtil.getChildPath(localFilePath, iFileName), excludeFileNameList, extList);
           }
         }
         log.info(String.format("[%s]SFTP下载(目录)完成: [%s] -> [%s]", "download", sftpFilePath, localFilePath));

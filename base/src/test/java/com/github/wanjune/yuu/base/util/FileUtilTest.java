@@ -16,9 +16,9 @@ class FileUtilTest {
 
   @AfterAll
   public static void tearDown() throws Exception {
-    FileUtil.delete(FileUtil.getParentDirPath(FILE_PATH_1));
-    FileUtil.delete(FileUtil.getParentDirPath(FILE_PATH_2));
-    FileUtil.delete(FileUtil.getParentDirPath(FILE_PATH_3));
+    FileUtil.delete(FileUtil.getParentPath(FILE_PATH_1));
+    FileUtil.delete(FileUtil.getParentPath(FILE_PATH_2));
+    FileUtil.delete(FileUtil.getParentPath(FILE_PATH_3));
   }
 
   @BeforeEach
@@ -64,16 +64,16 @@ class FileUtilTest {
 
   @Test
   @Order(5)
-  void getParentDirPath() {
-    Assertions.assertEquals(FileUtil.getParentDirPath(FILE_PATH_1), DIR_PATH + FileUtil.SEPARATOR + "20221011");
-    Assertions.assertEquals(FileUtil.getParentDirPath(FILE_PATH_2), DIR_PATH + FileUtil.SEPARATOR + "20221012");
+  void getParentPath() {
+    Assertions.assertEquals(FileUtil.getParentPath(FILE_PATH_1), DIR_PATH + FileUtil.SEPARATOR + "20221011");
+    Assertions.assertEquals(FileUtil.getParentPath(FILE_PATH_2), DIR_PATH + FileUtil.SEPARATOR + "20221012");
   }
 
   @Test
   @Order(7)
-  void getChildFilePath() {
-    Assertions.assertEquals(FileUtil.getChildFilePath(DIR_PATH + FileUtil.SEPARATOR + "20221011", "1156." + FileUtil.EXT_CSV), FILE_PATH_1);
-    Assertions.assertEquals(FileUtil.getChildFilePath(DIR_PATH + FileUtil.SEPARATOR + "20221012", "1157." + FileUtil.EXT_TXT), FILE_PATH_2);
+  void getChildPath() {
+    Assertions.assertEquals(FileUtil.getChildPath(DIR_PATH + FileUtil.SEPARATOR + "20221011", "1156." + FileUtil.EXT_CSV), FILE_PATH_1);
+    Assertions.assertEquals(FileUtil.getChildPath(DIR_PATH + FileUtil.SEPARATOR + "20221012", "1157." + FileUtil.EXT_TXT), FILE_PATH_2);
   }
 
   @Test
