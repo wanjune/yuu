@@ -148,7 +148,11 @@ public class FileUtil {
       File[] fileArrays = dirFile.listFiles();
       if (fileArrays != null && fileArrays.length > 0) {
         for (File iFile : fileArrays) {
-          if (ext.equalsIgnoreCase(getExtension(iFile.getName()))) {
+          if (StringUtil.isNotEmpty(ext)) {
+            if (ext.equalsIgnoreCase(getExtension(iFile.getName()))) {
+              filePathList.add(iFile.getAbsolutePath());
+            }
+          } else {
             filePathList.add(iFile.getAbsolutePath());
           }
         }

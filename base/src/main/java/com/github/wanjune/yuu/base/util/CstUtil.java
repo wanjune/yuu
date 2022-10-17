@@ -11,6 +11,7 @@ public class CstUtil {
   /**
    * 通用
    */
+  public static final String UTF_8 = "UTF-8";
   public static final String FALSE = "0";
   public static final String TRUE = "1";
 
