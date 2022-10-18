@@ -11,7 +11,6 @@ public class CstUtil {
   /**
    * 通用
    */
-  public static final String UTF_8 = "UTF-8";
   public static final String FALSE = "0";
   public static final String TRUE = "1";
 
@@ -19,7 +18,7 @@ public class CstUtil {
    * 字符
    */
   public static final char CHAR_SOH = '\001';
-  public static final char CHAR_STX = '\003';
+  public static final char CHAR_STX = '\002';
   public static final char CHAR_ETX = '\003';
 
   public static final String AND = "&";
@@ -28,8 +27,6 @@ public class CstUtil {
   public static final String COMMA = ",";
   public static final String SLASH = "/";
   public static final String DOUBLE_QUOTE = "\"";
-  //public static final String BRACKET_PREFIX = "[";
-  //public static final String BRACKET_SUFFIX = "]";
   public static final String BRACKET = "[]";
   public static final String CURLY_BRACKET_PREFIX = "\\{";
   public static final String CURLY_BRACKET_SUFFIX = "}";

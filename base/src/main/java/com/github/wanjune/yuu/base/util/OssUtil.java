@@ -138,7 +138,7 @@ public class OssUtil {
       // 初始化分片
       InitiateMultipartUploadResult uploadResult = ossClient.initiateMultipartUpload(putObjectPartRequest);
       uploadId = uploadResult.getUploadId();
-      List<PartETag> partETags = new ArrayList<PartETag>();
+      List<PartETag> partETags = new ArrayList<>();
 
       // 计算分片
       final File localFile = new File(localFilePath);

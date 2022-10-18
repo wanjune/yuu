@@ -96,4 +96,21 @@ class SftpUtilTest {
     Assertions.assertFalse(sftpUtil.isDir("./dev/test_file-0913.xlsx"));
     Assertions.assertFalse(sftpUtil.isDir("./dev/test_file-0913.pptx"));
   }
+
+  @Test
+  void immediateGet() throws Exception {
+    // 目录下载
+    SftpUtil.immediateGet(HOST, PORT, USERNAME, PASSWORD, "./test", LOCAL_DIR, ListUtil.asList("test_file-0913.xlsx"), ListUtil.asList("pptx"), true);
+    // 文件下载
+    SftpUtil.immediateGet(HOST, PORT, USERNAME, PASSWORD, "/var/sftpfilestore/sftpuser/test/test_file-0913.xlsx", LOCAL_DIR + "/test_file-0913.xlsx", null, null, true);
+  }
+
+  @Test
+  void immediatePut() throws Exception {
+    // 目录上传
+    SftpUtil.immediatePut(HOST, PORT, USERNAME, PASSWORD, LOCAL_DIR, "./dev", ListUtil.asList("test_file-0913.xlsx"), ListUtil.asList("xls"), true);
+    // 文件上传
+    SftpUtil.immediatePut(HOST, PORT, USERNAME, PASSWORD, LOCAL_DIR + "/test_file-0913.xlsx", "/var/sftpfilestore/sftpuser/dev/test_file-0913.xlsx", null, null, true);
+    SftpUtil.immediatePut(HOST, PORT, USERNAME, PASSWORD, LOCAL_DIR + "/AUDIT_APP.xls", "/var/sftpfilestore/sftpuser/dev/AUDIT_APP.xls", null, null, true);
+  }
 }
