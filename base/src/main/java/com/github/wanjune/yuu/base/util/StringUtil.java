@@ -83,8 +83,8 @@ public class StringUtil {
    * 去除字符串首尾成对的符号
    * <p>头尾字符相同(单引号等,双引号[半角/全角],大括号[半角/全角],中括号[半角/全角]等)</p>
    *
-   * @param string  待处理的字符串
-   * @param chars 头尾符号
+   * @param string 待处理的字符串
+   * @param chars  头尾符号
    * @return 处理后的字符串
    */
   public static String trimFirstAndLastChar(final String string, final String chars) {
