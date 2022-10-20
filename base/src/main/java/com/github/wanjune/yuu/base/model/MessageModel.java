@@ -1,5 +1,6 @@
 package com.github.wanjune.yuu.base.model;
 
+import com.github.wanjune.yuu.base.util.CstUtil;
 import com.github.wanjune.yuu.base.util.MapUtil;
 import com.github.wanjune.yuu.base.util.StringUtil;
 import com.github.wanjune.yuu.base.value.Messageable;
@@ -43,7 +44,7 @@ public class MessageModel implements Serializable {
     } else if (objExt instanceof String) {
       this.message = StringUtil.instance(message.message(), MapUtil.of(VAR_EXT, (String) objExt));
     } else if (objExt instanceof List) {
-      this.message = StringUtil.instance(message.message(), MapUtil.of(VAR_EXT, StringUtil.getSplitString((List<String>) objExt)));
+      this.message = StringUtil.instance(message.message(), MapUtil.of(VAR_EXT, StringUtil.splitList((List<String>) objExt, CstUtil.COMMA)));
     } else if (objExt instanceof Map) {
       this.message = StringUtil.instance(message.message(), (Map<String, Object>) objExt);
     }

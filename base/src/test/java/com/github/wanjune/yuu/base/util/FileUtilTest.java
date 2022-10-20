@@ -33,8 +33,8 @@ class FileUtilTest {
   @Order(1)
   @Test
   void isExist() {
-    Assertions.assertFalse(FileUtil.isExist(FILE_PATH_1));
-    Assertions.assertTrue(FileUtil.isExist(FILE_PATH_2));
+    Assertions.assertFalse(FileUtil.isExists(FILE_PATH_1));
+    Assertions.assertTrue(FileUtil.isExists(FILE_PATH_2));
   }
 
   @Test
@@ -46,20 +46,20 @@ class FileUtilTest {
   @Test
   @Order(3)
   void delete() {
-    Assertions.assertTrue(FileUtil.isExist(FILE_PATH_2));
+    Assertions.assertTrue(FileUtil.isExists(FILE_PATH_2));
 
     FileUtil.delete(FILE_PATH_2);
-    Assertions.assertFalse(FileUtil.isExist(FILE_PATH_2));
+    Assertions.assertFalse(FileUtil.isExists(FILE_PATH_2));
   }
 
   @Test
   @Order(4)
   void testDelete() {
     fileWrite(FILE_PATH_1);
-    Assertions.assertTrue(FileUtil.isExist(FILE_PATH_1));
+    Assertions.assertTrue(FileUtil.isExists(FILE_PATH_1));
 
     FileUtil.delete(FileUtil.create(FILE_PATH_1));
-    Assertions.assertFalse(FileUtil.isExist(FILE_PATH_1));
+    Assertions.assertFalse(FileUtil.isExists(FILE_PATH_1));
   }
 
   @Test
@@ -100,11 +100,11 @@ class FileUtilTest {
     fileWrite(FILE_PATH_2);
     FileUtil.combine(ListUtil.asList(FILE_PATH_1, FILE_PATH_2), FILE_PATH_3, true);
 
-    Assertions.assertTrue(FileUtil.isExist(FILE_PATH_3));
+    Assertions.assertTrue(FileUtil.isExists(FILE_PATH_3));
     Assertions.assertTrue(FileUtil.create(FILE_PATH_3).isFile());
 
     FileUtil.delete(FileUtil.create(FILE_PATH_3));
-    Assertions.assertFalse(FileUtil.isExist(FILE_PATH_3));
+    Assertions.assertFalse(FileUtil.isExists(FILE_PATH_3));
   }
 
   private void fileWrite(String filePath) {

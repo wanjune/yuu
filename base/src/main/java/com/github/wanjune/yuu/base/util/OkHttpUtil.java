@@ -90,7 +90,7 @@ public class OkHttpUtil {
 
       // Body
       RequestBody reqBody = null;
-      if (StringUtil.isNotBlank(body) && StringUtil.isNotBlank(mediaType)) {
+      if (StringUtil.notBlank(body) && StringUtil.notBlank(mediaType)) {
         reqBody = RequestBody.create(body, MediaType.parse(mediaType));
       }
 

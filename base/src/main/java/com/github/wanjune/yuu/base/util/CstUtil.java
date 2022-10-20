@@ -14,13 +14,6 @@ public class CstUtil {
   public static final String FALSE = "0";
   public static final String TRUE = "1";
 
-  /**
-   * 字符
-   */
-  public static final char CHAR_SOH = '\001';
-  public static final char CHAR_STX = '\002';
-  public static final char CHAR_ETX = '\003';
-
   public static final String AND = "&";
   public static final String OR = "|";
   public static final String DOT = ".";

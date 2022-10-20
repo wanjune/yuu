@@ -32,8 +32,6 @@ public class SftpUtil {
   private static final int SFTP_DEFAULT_PORT = 22;
   // 通道类型 - SFTP
   private static final String CHANNEL_TYPE_SFTP = "sftp";
-  // 排除文件名称前缀为"."的文件(系统文件或隐藏文件)
-  private static final String EXCLUDE_PREFIX = ".";
 
   // 相对路径前缀
   private static final String RELATIVE_PATH_PRE1 = "./";
@@ -101,8 +99,7 @@ public class SftpUtil {
     } catch (Exception ex) {
       throw new SftpException(String.format("下载文件/目录[%s]失败", sftpFilePath), ex);
     } finally {
-      // 通道SFTP关闭
-      if (sftpUtil != null) sftpUtil.closeChannel();
+      if (sftpUtil != null) sftpUtil.closeChannel(); // 通道SFTP关闭
     }
   }
 
@@ -141,8 +138,7 @@ public class SftpUtil {
     } catch (Exception ex) {
       throw new SftpException(String.format("上传文件/目录[%s]失败", localFilePath), ex);
     } finally {
-      // 通道SFTP关闭
-      if (sftpUtil != null) sftpUtil.closeChannel();
+      if (sftpUtil != null) sftpUtil.closeChannel(); // 通道SFTP关闭
     }
   }
 
@@ -163,7 +159,7 @@ public class SftpUtil {
     try {
       // 获取Session
       this.session = new JSch().getSession(username, host, StringUtil.isBlank(port) ? SFTP_DEFAULT_PORT : Integer.parseInt(port));
-      if (StringUtil.isNotBlank(password)) this.session.setPassword(password);
+      if (StringUtil.notBlank(password)) this.session.setPassword(password);
       this.session.setConfig("StrictHostKeyChecking", "no");
       this.session.connect();
 
@@ -171,7 +167,7 @@ public class SftpUtil {
       Channel channel = this.session.openChannel(CHANNEL_TYPE_SFTP);
       channel.connect();
       this.channelSftp = (ChannelSftp) channel; // 转换为ChannelSftp对象
-      this.rootPath = channelSftp.pwd(); // 等了用户根路径
+      this.rootPath = channelSftp.pwd(); // 用户根路径
     } catch (Exception ex) {
       throw new SftpException(String.format("SFTP连接失败[主机:%s,端口:%s,用户:%s,秘钥:%s]", host, StringUtil.isBlank(port) ? SFTP_DEFAULT_PORT : port, username, password), ex);
     }
@@ -216,7 +212,7 @@ public class SftpUtil {
         String iFileName;
         for (ChannelSftp.LsEntry itemLsEntry : vLsEntry) {
           iFileName = itemLsEntry.getFilename();
-          if (!iFileName.startsWith(EXCLUDE_PREFIX) && (null == excludeFileNameList || !excludeFileNameList.contains(iFileName)) &&
+          if (!iFileName.startsWith(FileUtil.EXCLUDE_PREFIX) && (null == excludeFileNameList || !excludeFileNameList.contains(iFileName)) &&
               (null == extList || !extList.contains(FileUtil.getExtension(iFileName).toLowerCase()))) {
             get(FileUtil.getChildPath(sftpFileAbsolutePath, iFileName), FileUtil.getChildPath(localFilePath, iFileName), excludeFileNameList, extList);
           }
@@ -250,11 +246,11 @@ public class SftpUtil {
    * @param extList             排除的扩展名(目录上传时有效,文件下载时设置为[null])
    * @throws Exception
    */
-  public void put(final String localFilePath, final String sftpFilePath, final List<String> excludeFileNameList,
-                  final List<String> extList) throws Exception {
+  public void put(final String localFilePath, final String sftpFilePath,
+                  final List<String> excludeFileNameList, final List<String> extList) throws Exception {
 
     // 本路路径不存在 -> 退出
-    if (!FileUtil.isExist(localFilePath)) {
+    if (!FileUtil.isExists(localFilePath)) {
       log.info(String.format("[%s]文件/目录[%s]不存在 - 退出处理!", "put", localFilePath));
       return;
     }
@@ -269,13 +265,11 @@ public class SftpUtil {
         /**
          * 目录上传(递归)
          */
-        String iFilePath;
-        String iFileName;
+        String iFilePath, iFileName;
         for (File iFile : localFile.listFiles()) {
           iFilePath = iFile.getAbsolutePath();
-          iFileName = iFilePath.substring(iFilePath.lastIndexOf(iFile.separator) + 1);
-
-          if (!iFileName.startsWith(EXCLUDE_PREFIX) && (null == excludeFileNameList || !excludeFileNameList.contains(iFileName)) &&
+          iFileName = iFile.getName();
+          if (!iFileName.startsWith(FileUtil.EXCLUDE_PREFIX) && (null == excludeFileNameList || !excludeFileNameList.contains(iFileName)) &&
               (null == extList || !extList.contains(FileUtil.getExtension(iFileName).toLowerCase()))) {
             put(iFilePath, FileUtil.getChildPath(sftpFileAbsolutePath, iFileName), excludeFileNameList, extList);
           }
@@ -322,7 +316,7 @@ public class SftpUtil {
           String iFileName;
           for (ChannelSftp.LsEntry itemLsEntry : vLsEntry) {
             iFileName = itemLsEntry.getFilename();
-            if (!iFileName.startsWith(EXCLUDE_PREFIX)) {
+            if (!iFileName.startsWith(FileUtil.EXCLUDE_PREFIX)) {
               rm(FileUtil.getChildPath(sftpFileAbsolutePath, iFileName));
             }
           }
@@ -421,8 +415,7 @@ public class SftpUtil {
    */
   private String getAbsolutePath(String sftpPath) {
     return new File(sftpPath).isAbsolute() ? sftpPath :
-        (rootPath.endsWith(FileUtil.SEPARATOR) ? rootPath + sftpPath.replaceFirst(RELATIVE_PATH_PRE1, StringUtil.EMPTY) :
-            rootPath + sftpPath.replaceFirst(RELATIVE_PATH_PRE2, StringUtil.EMPTY));
+        rootPath.concat(sftpPath.replaceFirst((rootPath.endsWith(FileUtil.SEPARATOR) ? RELATIVE_PATH_PRE1 : RELATIVE_PATH_PRE2), StringUtil.EMPTY));
   }
 
 }

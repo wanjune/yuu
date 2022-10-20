@@ -58,7 +58,7 @@ public enum TaskMessageEnum implements Messageable {
    */
   @Override
   public String message() {
-    return StringUtil.isNotBlank(desc) ? desc : message;
+    return StringUtil.notBlank(desc) ? desc : message;
   }
 
 }

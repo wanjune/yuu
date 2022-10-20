@@ -105,34 +105,26 @@ class StringUtilTest {
   }
 
   @Test
-  void getRandomString() {
-    String rdmString = StringUtil.getRandomString(12);
-    log.info("getRandomString -> " + rdmString);
-    Assertions.assertEquals(StringUtil.length(rdmString), 12);
+  void random() {
+    String random = StringUtil.random(12);
+    log.info("random -> " + random);
+    Assertions.assertEquals(StringUtil.length(random), 12);
 
-    rdmString = StringUtil.getRandomString(16);
-    log.info("getRandomString -> " + rdmString);
-    Assertions.assertEquals(StringUtil.length(rdmString), 16);
+    random = StringUtil.random(16);
+    log.info("random -> " + random);
+    Assertions.assertEquals(StringUtil.length(random), 16);
 
-    rdmString = StringUtil.getRandomString(24);
-    log.info("getRandomString -> " + rdmString);
-    Assertions.assertEquals(StringUtil.length(rdmString), 24);
+    random = StringUtil.random(24);
+    log.info("randomrandom -> " + random);
+    Assertions.assertEquals(StringUtil.length(random), 24);
   }
 
   @Test
-  void getSplitString() {
-    Assertions.assertEquals(StringUtil.getSplitString(null), "");
-    Assertions.assertEquals(StringUtil.getSplitString(new ArrayList<>()), "");
-    Assertions.assertEquals(StringUtil.getSplitString(ListUtil.asList("a")), "a");
-    Assertions.assertEquals(StringUtil.getSplitString(ListUtil.asList("1", "a", "2", "b")), "1,a,2,b");
-  }
-
-  @Test
-  void getSplitStringSplit() {
-    Assertions.assertEquals(StringUtil.getSplitString(null, "\t"), "");
-    Assertions.assertEquals(StringUtil.getSplitString(new ArrayList<>(), "\t"), "");
-    Assertions.assertEquals(StringUtil.getSplitString(ListUtil.asList("a"), "\t"), "a");
-    Assertions.assertEquals(StringUtil.getSplitString(ListUtil.asList("1", "a", "2", "b"), "\t"), "1\ta\t2\tb");
+  void splitList() {
+    Assertions.assertEquals(StringUtil.splitList(null, "\t"), "");
+    Assertions.assertEquals(StringUtil.splitList(new ArrayList<>(), "\t"), "");
+    Assertions.assertEquals(StringUtil.splitList(ListUtil.asList("a"), "\t"), "a");
+    Assertions.assertEquals(StringUtil.splitList(ListUtil.asList("1", "a", "2", "b"), "\t"), "1\ta\t2\tb");
   }
 
   @Test
@@ -145,12 +137,12 @@ class StringUtilTest {
   }
 
   @Test
-  void isNotBlank() {
-    Assertions.assertFalse(StringUtil.isNotBlank(null));
-    Assertions.assertFalse(StringUtil.isNotBlank(""));
-    Assertions.assertFalse(StringUtil.isNotBlank(" "));
-    Assertions.assertFalse(StringUtil.isNotBlank("　"));
-    Assertions.assertTrue(StringUtil.isNotBlank("1"));
+  void notBlank() {
+    Assertions.assertFalse(StringUtil.notBlank(null));
+    Assertions.assertFalse(StringUtil.notBlank(""));
+    Assertions.assertFalse(StringUtil.notBlank(" "));
+    Assertions.assertFalse(StringUtil.notBlank("　"));
+    Assertions.assertTrue(StringUtil.notBlank("1"));
   }
 
   @Test
@@ -161,9 +153,9 @@ class StringUtilTest {
   }
 
   @Test
-  void isNotEmpty() {
-    Assertions.assertFalse(StringUtil.isNotEmpty(null));
-    Assertions.assertFalse(StringUtil.isNotEmpty(""));
-    Assertions.assertTrue(StringUtil.isNotEmpty(" "));
+  void notEmpty() {
+    Assertions.assertFalse(StringUtil.notEmpty(null));
+    Assertions.assertFalse(StringUtil.notEmpty(""));
+    Assertions.assertTrue(StringUtil.notEmpty(" "));
   }
 }

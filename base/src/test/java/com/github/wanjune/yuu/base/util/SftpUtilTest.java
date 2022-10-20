@@ -31,21 +31,21 @@ class SftpUtilTest {
   void get() throws Exception {
     FileUtil.delete(LOCAL_DIR);
     sftpUtil.get("/var/sftpfilestore/sftpuser/dev", LOCAL_DIR, null, null);
-    Assertions.assertTrue(FileUtil.isExist(LOCAL_DIR));
+    Assertions.assertTrue(FileUtil.isExists(LOCAL_DIR));
     Assertions.assertTrue(FileUtil.getChildFilePathList(LOCAL_DIR, "xlsx").size() > 0);
 
     FileUtil.delete(LOCAL_DIR);
     sftpUtil.get("/var/sftpfilestore/sftpuser/dev/test_file-0913.xlsx", FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx"), null, null);
-    Assertions.assertTrue(FileUtil.isExist(FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx")));
+    Assertions.assertTrue(FileUtil.isExists(FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx")));
 
     FileUtil.delete(LOCAL_DIR);
     sftpUtil.get("./dev", LOCAL_DIR, null, null);
-    Assertions.assertTrue(FileUtil.isExist(LOCAL_DIR));
+    Assertions.assertTrue(FileUtil.isExists(LOCAL_DIR));
     Assertions.assertTrue(FileUtil.getChildFilePathList(LOCAL_DIR, "xlsx").size() > 0);
 
     FileUtil.delete(LOCAL_DIR);
     sftpUtil.get("./dev/test_file-0913.xlsx", FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx"), null, null);
-    Assertions.assertTrue(FileUtil.isExist(FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx")));
+    Assertions.assertTrue(FileUtil.isExists(FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx")));
   }
 
   @Test

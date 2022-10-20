@@ -27,8 +27,6 @@ import java.util.List;
 @Slf4j
 @SuppressWarnings("all")
 public class OssUtil {
-
-  private static final String FILE_SEPARATOR = "/";
   private static final long FILE_LIMIT_SIZE = 2 * 1024 * 1024 * 1024L;   // 2 GB
   private static final long FILE_PART_SIZE = 1 * 1024 * 1024 * 1024L;   // 1 GB
   private final String bucket;
@@ -178,7 +176,7 @@ public class OssUtil {
       log.error(String.format("[%s]OSS分片上传文件,[%s]->[%s]发生异常!", "putObjectPart", localFilePath, ossFilePath), ex);
 
       // 取消分片上传
-      if (StringUtil.isNotBlank(uploadId)) {
+      if (StringUtil.notBlank(uploadId)) {
         try {
           ListPartsRequest listPartsRequest = new ListPartsRequest(this.bucket, ossFilePath, uploadId);
           listPartsRequest.setMaxParts(100);
@@ -254,10 +252,10 @@ public class OssUtil {
   public String getParent(String ossFileOrDir) {
     try {
       String strFilePath = ossFileOrDir;
-      if (strFilePath.endsWith(FILE_SEPARATOR)) {
-        strFilePath = strFilePath.substring(0, strFilePath.lastIndexOf(FILE_SEPARATOR));
+      if (strFilePath.endsWith(FileUtil.SEPARATOR)) {
+        strFilePath = strFilePath.substring(0, strFilePath.lastIndexOf(FileUtil.SEPARATOR));
       }
-      return strFilePath.substring(0, strFilePath.lastIndexOf(FILE_SEPARATOR));
+      return strFilePath.substring(0, strFilePath.lastIndexOf(FileUtil.SEPARATOR));
     } catch (Exception ex) {
       throw new OssException(String.format("获取上级目录[%s]失败", ossFileOrDir), ex);
     }

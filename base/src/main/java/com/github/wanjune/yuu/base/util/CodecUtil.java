@@ -14,11 +14,11 @@ public class CodecUtil {
   /**
    * 将字符串进行base64编码
    *
-   * @param contextString 待base64编码的字符串
+   * @param string 待base64编码的字符串
    * @return base64编码后的字符串
    */
-  public static String encodeBase64(final String contextString) {
-    return Base64.encodeBase64String(contextString.getBytes());
+  public static String encodeBase64(final String string) {
+    return Base64.encodeBase64String(string.getBytes());
   }
 
   /**
@@ -34,41 +34,41 @@ public class CodecUtil {
   /**
    * 计算MD5摘要
    *
-   * @param contextString 待处理字符串
+   * @param string 待处理字符串
    * @return MD5摘要的2进制字符串
    */
-  public static String md5(final String contextString) {
-    return DigestUtils.md5Hex(contextString);
+  public static String md5(final String string) {
+    return DigestUtils.md5Hex(string);
   }
 
   /**
    * 计算SHA-1摘要
    *
-   * @param contextString 待处理字符串
+   * @param string 待处理字符串
    * @return SHA-1摘要的2进制字符串
    */
-  public static String sha1(final String contextString) {
-    return DigestUtils.sha1Hex(contextString);
+  public static String sha1(final String string) {
+    return DigestUtils.sha1Hex(string);
   }
 
   /**
    * 计算SHA-256摘要
    *
-   * @param contextString 待处理字符串
+   * @param string 待处理字符串
    * @return SHA-256摘要的2进制字符串
    */
-  public static String sha256(final String contextString) {
-    return DigestUtils.sha256Hex(contextString);
+  public static String sha256(final String string) {
+    return DigestUtils.sha256Hex(string);
   }
 
   /**
    * 计算SHA-512摘要
    *
-   * @param contextString 待处理字符串
+   * @param string 待处理字符串
    * @return SHA-512摘要的2进制字符串
    */
-  public static String sha512(final String contextString) {
-    return DigestUtils.sha512Hex(contextString);
+  public static String sha512(final String string) {
+    return DigestUtils.sha512Hex(string);
   }
 
 }

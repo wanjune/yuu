@@ -58,10 +58,10 @@ public class HttpUtil {
   public static Map<String, String> getAppInfo(final HttpServletRequest request) {
     String appId = StringUtil.EMPTY;
     String appSecKey = StringUtil.EMPTY;
-    if (StringUtil.isNotEmpty(request.getHeader(APP_ID))) {
+    if (StringUtil.notEmpty(request.getHeader(APP_ID))) {
       appId = request.getHeader(APP_ID);
     }
-    if (StringUtil.isNotEmpty(request.getHeader(APP_SECKEY))) {
+    if (StringUtil.notEmpty(request.getHeader(APP_SECKEY))) {
       appSecKey = request.getHeader(APP_SECKEY);
     }
     return MapUtil.of(APP_ID, appId, APP_SECKEY, appSecKey);
@@ -73,11 +73,12 @@ public class HttpUtil {
    * @param uri 请求URI
    * @return 标准URI
    */
-  public static String cleanUri(String uri) {
-    if (uri.endsWith(CstUtil.SLASH)) {
-      uri = uri.substring(0, uri.length() - 1);
+  public static String cleanUri(final String uri) {
+    String strUri = uri;
+    if (strUri.endsWith(CstUtil.SLASH)) {
+      strUri = uri.substring(0, strUri.length() - 1);
     }
-    return uri;
+    return strUri;
   }
 
 }
