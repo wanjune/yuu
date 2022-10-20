@@ -32,7 +32,7 @@ class SftpUtilTest {
     FileUtil.delete(LOCAL_DIR);
     sftpUtil.get("/var/sftpfilestore/sftpuser/dev", LOCAL_DIR, null, null);
     Assertions.assertTrue(FileUtil.isExists(LOCAL_DIR));
-    Assertions.assertTrue(FileUtil.getChildFilePathList(LOCAL_DIR, "xlsx").size() > 0);
+    Assertions.assertTrue(ListUtil.size(FileUtil.listFiles(LOCAL_DIR, ListUtil.asList(FileUtil.EXT_XLXS))) > 0);
 
     FileUtil.delete(LOCAL_DIR);
     sftpUtil.get("/var/sftpfilestore/sftpuser/dev/test_file-0913.xlsx", FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx"), null, null);
@@ -41,7 +41,7 @@ class SftpUtilTest {
     FileUtil.delete(LOCAL_DIR);
     sftpUtil.get("./dev", LOCAL_DIR, null, null);
     Assertions.assertTrue(FileUtil.isExists(LOCAL_DIR));
-    Assertions.assertTrue(FileUtil.getChildFilePathList(LOCAL_DIR, "xlsx").size() > 0);
+    Assertions.assertTrue(ListUtil.size(FileUtil.listFiles(LOCAL_DIR, ListUtil.asList(FileUtil.EXT_XLXS))) > 0);
 
     FileUtil.delete(LOCAL_DIR);
     sftpUtil.get("./dev/test_file-0913.xlsx", FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx"), null, null);

@@ -33,10 +33,6 @@ public class SftpUtil {
   // 通道类型 - SFTP
   private static final String CHANNEL_TYPE_SFTP = "sftp";
 
-  // 相对路径前缀
-  private static final String RELATIVE_PATH_PRE1 = "./";
-  private static final String RELATIVE_PATH_PRE2 = ".";
-
   /*
    * FTP配置属性
    */
@@ -414,8 +410,9 @@ public class SftpUtil {
    * @return SFTP文件/目录的绝对路径
    */
   private String getAbsolutePath(String sftpPath) {
-    return new File(sftpPath).isAbsolute() ? sftpPath :
-        rootPath.concat(sftpPath.replaceFirst((rootPath.endsWith(FileUtil.SEPARATOR) ? RELATIVE_PATH_PRE1 : RELATIVE_PATH_PRE2), StringUtil.EMPTY));
+    String strRootPath = StringUtil.removeLast(rootPath, FileUtil.SEPARATOR);
+    String strSftpPath = StringUtil.removeLast(sftpPath, FileUtil.SEPARATOR);
+    return new File(strSftpPath).isAbsolute() ? strSftpPath : strRootPath.concat(strSftpPath.replaceFirst(CstUtil.DOT, StringUtil.EMPTY));
   }
 
 }

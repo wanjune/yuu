@@ -89,8 +89,8 @@ class FileUtilTest {
   void getChildFilePathList() {
     fileWrite(FILE_PATH_1);
     fileWrite(FILE_PATH_2);
-    Assertions.assertEquals(FileUtil.getChildFilePathList(DIR_PATH + FileUtil.SEPARATOR + "20221011", FileUtil.EXT_CSV), ListUtil.asList(FILE_PATH_1));
-    Assertions.assertEquals(FileUtil.getChildFilePathList(DIR_PATH + FileUtil.SEPARATOR + "20221012", FileUtil.EXT_TXT), ListUtil.asList(FILE_PATH_2));
+    Assertions.assertEquals(FileUtil.listFiles(DIR_PATH + FileUtil.SEPARATOR + "20221011", ListUtil.asList(FileUtil.EXT_CSV)), ListUtil.asList(FILE_PATH_1));
+    Assertions.assertEquals(FileUtil.listFiles(DIR_PATH + FileUtil.SEPARATOR + "20221012", ListUtil.asList(FileUtil.EXT_TXT)), ListUtil.asList(FILE_PATH_2));
   }
 
   @Test

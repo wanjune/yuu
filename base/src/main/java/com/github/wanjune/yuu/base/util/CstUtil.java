@@ -13,6 +13,9 @@ public class CstUtil {
    */
   public static final String FALSE = "0";
   public static final String TRUE = "1";
+  public static final String DATA_NULL = "null";
+  public static final String DATA_FALSE = "false";
+  public static final String DATA_TRUE = "true";
 
   public static final String AND = "&";
   public static final String OR = "|";

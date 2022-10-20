@@ -12,7 +12,7 @@ import java.util.Random;
  */
 public class StringUtil {
 
-  public static final String DATA_NULL = "null";
+  // 常用字符串
   public static final String EMPTY = "";
   public static final String SPACE = " ";
 
@@ -44,13 +44,13 @@ public class StringUtil {
   /**
    * 获取实际字符串(带参数的字符串以[{}]变量形式的参数，变为实际字符）
    *
-   * @param strVar   带参数变量的字符串
+   * @param string   带参数变量的字符串
    * @param objParam 参数对象(Map类型)
    * @return 真实字符串
    */
-  public static String instance(final String strVar, final Map<String, Object> objParam) {
-    String strResult = strVar;
-    if (notEmpty(strVar) && MapUtil.nonEmpty(objParam)) {
+  public static String instance(final String string, final Map<String, Object> objParam) {
+    String strResult = string;
+    if (notEmpty(string) && MapUtil.nonEmpty(objParam)) {
       for (String itemKey : objParam.keySet()) {
         strResult = strResult.replaceAll(CstUtil.CURLY_BRACKET_PREFIX + itemKey + CstUtil.CURLY_BRACKET_SUFFIX, objParam.get(itemKey).toString());
       }
@@ -61,16 +61,16 @@ public class StringUtil {
   /**
    * 字符串是否包含指定的字符串
    *
-   * @param strVar     待判断的字符串
+   * @param string     待判断的字符串
    * @param searchList 检索包含的对象列表
    * @param isIgnore   是否忽略大小写
    * @return 判断结果
    */
-  public static boolean isContains(final String strVar, final List<String> searchList, final boolean isIgnore) {
+  public static boolean isContains(final String string, final List<String> searchList, final boolean isIgnore) {
     boolean isContained = false;
-    if (notBlank(strVar) && ListUtil.nonEmpty(searchList)) {
+    if (notBlank(string) && ListUtil.nonEmpty(searchList)) {
       for (String searchItem : searchList) {
-        if ((isIgnore && strVar.toLowerCase().contains(searchItem.toLowerCase())) || strVar.contains(searchItem)) {
+        if ((isIgnore && string.toLowerCase().contains(searchItem.toLowerCase())) || string.contains(searchItem)) {
           isContained = true;
           break;
         }
@@ -83,11 +83,11 @@ public class StringUtil {
    * 去除字符串首尾成对的符号
    * <p>头尾字符相同(单引号等,双引号[半角/全角],大括号[半角/全角],中括号[半角/全角]等)</p>
    *
-   * @param strVar  待处理的字符串
+   * @param string  待处理的字符串
    * @param strChar 头尾符号
    * @return 处理后的字符串
    */
-  public static String trimFirstAndLastChar(final String strVar, final String strChar) {
+  public static String trimFirstAndLastChar(final String string, final String strChar) {
     // 首尾符号
     String charFirst = EMPTY;
     String charLast = EMPTY;
@@ -98,27 +98,38 @@ public class StringUtil {
       charFirst = strChar.substring(0, 1);
       charLast = strChar.substring(1);
     } else {
-      return strVar;
+      return string;
     }
     // 字符处理
-    if (length(strVar) < 2 || isBlank(charFirst) || isBlank(charLast) || !(strVar.startsWith(charFirst) && strVar.endsWith(charLast))) {
-      return strVar;
+    if (length(string) < 2 || isBlank(charFirst) || isBlank(charLast) || !(string.startsWith(charFirst) && string.endsWith(charLast))) {
+      return string;
     } else {
-      return strVar.substring(0, strVar.lastIndexOf(charLast)).substring(strVar.indexOf(charFirst) + 1);
+      return string.substring(0, string.lastIndexOf(charLast)).substring(string.indexOf(charFirst) + 1);
     }
+  }
+
+  /**
+   * 去除字符串尾部字符
+   *
+   * @param string 待处理的字符串
+   * @param last   要移除的尾部字符串
+   * @return 处理后的字符串
+   */
+  public static String removeLast(final String string, final String last) {
+    return isEmpty(string) || isEmpty(last) || !string.endsWith(last) ? string : string.substring(0, string.lastIndexOf(last));
   }
 
   /**
    * 将字符串中所有半角字符转换为全角字符
    *
-   * @param strVar: 可能包含半角字符的字符串
+   * @param string: 可能包含半角字符的字符串
    * @return 全角字符串
    */
-  public static String toFullwidth(final String strVar) {
-    if (isEmpty(strVar)) return strVar;
+  public static String toFullwidth(final String string) {
+    if (isEmpty(string)) return string;
 
-    StringBuilder sb = new StringBuilder(strVar.length());
-    char[] charArray = strVar.toCharArray();
+    StringBuilder sb = new StringBuilder(string.length());
+    char[] charArray = string.toCharArray();
     for (char charItem : charArray) {
       if (ASCII_HALFWIDTH_SPACE == charItem) { // 半角[Space](ASCII): 32
         sb.append(ASCII_FULL_WIDTH_SPACE);
@@ -134,14 +145,14 @@ public class StringUtil {
   /**
    * 将字符串中所有全角字符转换为半角字符
    *
-   * @param strVar: 包含全角字符的字符串
+   * @param string: 包含全角字符的字符串
    * @return 半角字符串
    */
-  public static String toHalfwidth(final String strVar) {
-    if (isEmpty(strVar)) return strVar;
+  public static String toHalfwidth(final String string) {
+    if (isEmpty(string)) return string;
 
-    StringBuilder sb = new StringBuilder(strVar.length());
-    char[] charArray = strVar.toCharArray();
+    StringBuilder sb = new StringBuilder(string.length());
+    char[] charArray = string.toCharArray();
     for (char charItem : charArray) {
       if (ASCII_FULL_WIDTH_SPACE == charItem) {
         sb.append(ASCII_HALFWIDTH_SPACE); // 全角[Space](ASCII): 12288
@@ -159,15 +170,15 @@ public class StringUtil {
    * <p>[^\u0000-\uFFFF]</p>
    * <p>字符串[NULL(不区分大小写)] -> 空对象</p>
    *
-   * @param strVar 待处理字符串
+   * @param string 待处理字符串
    * @return 删除Unicode字符后的字符串
    */
-  public static String cleanUnicode(final String strVar) {
-    if (notBlank(strVar) && !DATA_NULL.equalsIgnoreCase(strVar.trim())) {
-      String strText = strVar.replaceAll(REGEX_UNICODE, EMPTY).replaceAll(REGEX_UNICODE, EMPTY).trim();
-      return DATA_NULL.equalsIgnoreCase(strText) ? null : strText;
+  public static String cleanUnicode(final String string) {
+    if (notBlank(string) && !CstUtil.DATA_NULL.equalsIgnoreCase(string.trim())) {
+      String strText = string.replaceAll(REGEX_UNICODE, EMPTY).replaceAll(REGEX_UNICODE, EMPTY).trim();
+      return CstUtil.DATA_NULL.equalsIgnoreCase(strText) ? null : strText;
     } else {
-      return DATA_NULL.equalsIgnoreCase(strVar) ? null : strVar;
+      return CstUtil.DATA_NULL.equalsIgnoreCase(string) ? null : string;
     }
   }
 
@@ -176,20 +187,20 @@ public class StringUtil {
    * <p>删除控制字符(ASCII)[0 ~ 31]和DEL(ASCII):[127]</p>
    * <p>字符串[NULL(不区分大小写)] -> 空对象</p>
    *
-   * @param strVar 待处理字符串
+   * @param string 待处理字符串
    * @return 返回剔除控制字符后的字符串
    */
-  public static String cleanControl(final String strVar) {
-    if (notBlank(strVar) && !DATA_NULL.equalsIgnoreCase(strVar.trim())) {
+  public static String cleanControl(final String string) {
+    if (notBlank(string) && !CstUtil.DATA_NULL.equalsIgnoreCase(string.trim())) {
       StringBuilder sb = new StringBuilder(EMPTY);
-      for (int i = 0; i < strVar.length(); i++) {
-        if (strVar.charAt(i) > ASCII_CTRL_END && strVar.charAt(i) != ASCII_DEL) {
-          sb.append(strVar.charAt(i));
+      for (int i = 0; i < string.length(); i++) {
+        if (string.charAt(i) > ASCII_CTRL_END && string.charAt(i) != ASCII_DEL) {
+          sb.append(string.charAt(i));
         }
       }
-      return DATA_NULL.equalsIgnoreCase(sb.toString()) ? null : sb.toString();
+      return CstUtil.DATA_NULL.equalsIgnoreCase(sb.toString()) ? null : sb.toString();
     } else {
-      return DATA_NULL.equalsIgnoreCase(strVar) ? null : strVar;
+      return CstUtil.DATA_NULL.equalsIgnoreCase(string) ? null : string;
     }
   }
 
@@ -201,19 +212,19 @@ public class StringUtil {
    * <p>3.删除空格</p>
    * <p>同时,字符串[NULL(不区分大小写)] -> 空对象</p>
    *
-   * @param strVar: 待处理字符串
+   * @param string: 待处理字符串
    * @return 清理后的字符串
    */
   @SuppressWarnings("ALL")
-  public static String cleanText(final String strVar) {
-    if (notEmpty(strVar) && !DATA_NULL.equalsIgnoreCase(strVar.trim())) {
-      String strText = cleanControl(toHalfwidth(strVar));
+  public static String cleanText(final String string) {
+    if (notEmpty(string) && !CstUtil.DATA_NULL.equalsIgnoreCase(string.trim())) {
+      String strText = cleanControl(toHalfwidth(string));
       if (notEmpty(strText)) {
         strText = strText.replaceAll(String.valueOf(ASCII_HALFWIDTH_SPACE), EMPTY);
       }
-      return DATA_NULL.equalsIgnoreCase(strText) ? null : strText;
+      return CstUtil.DATA_NULL.equalsIgnoreCase(strText) ? null : strText;
     } else {
-      return DATA_NULL.equalsIgnoreCase(strVar) ? null : strVar;
+      return CstUtil.DATA_NULL.equalsIgnoreCase(string) ? null : string;
     }
   }
 

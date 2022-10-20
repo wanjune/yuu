@@ -30,6 +30,7 @@ public class FileUtil {
   // 文件名中扩展名分隔符
   public static final int EXT_SEPARATOR = '.';
   // 文件扩展名
+  public static final String EXT_XLXS = "xlsx";
   public static final String EXT_TXT = "txt";
   public static final String EXT_GZ = "gz";
   public static final String EXT_CSV = "csv";
@@ -110,11 +111,7 @@ public class FileUtil {
    */
   public static String getParentPath(final String filePath) {
     try {
-      // 替换Windows系统路径中的目录分割符
-      String strFilePath = filePath.replaceAll(WINDOWS_SEPARATOR, SEPARATOR);
-      // 去除尾部目录分隔符
-      if (strFilePath.endsWith(SEPARATOR)) strFilePath = strFilePath.substring(0, strFilePath.lastIndexOf(SEPARATOR));
-
+      String strFilePath = StringUtil.removeLast(filePath.replaceAll(WINDOWS_SEPARATOR, SEPARATOR), SEPARATOR); // 替换Windows系统分割符 并 去除尾部分隔符
       return strFilePath.substring(0, strFilePath.lastIndexOf(SEPARATOR));
     } catch (Exception ex) {
       throw new YuuException(String.format("获取[%s]的上级路径失败", filePath), ex);
@@ -130,10 +127,8 @@ public class FileUtil {
    */
   public static String getChildPath(final String dirPath, final String fileName) {
     try {
-      // 替换Windows系统路径中的目录分割符
-      String strDirPath = dirPath.replaceAll(WINDOWS_SEPARATOR, SEPARATOR);
-
-      return strDirPath.endsWith(SEPARATOR) ? strDirPath.concat(fileName) : strDirPath.concat(SEPARATOR).concat(fileName);
+      String strDirPath = StringUtil.removeLast(dirPath.replaceAll(WINDOWS_SEPARATOR, SEPARATOR), SEPARATOR); // 替换Windows系统分割符 并 去除尾部分隔符
+      return strDirPath.concat(SEPARATOR).concat(fileName);
     } catch (Exception ex) {
       throw new YuuException(String.format("获取[%s]的下级[%s]路径失败", dirPath, fileName), ex);
     }
@@ -162,24 +157,24 @@ public class FileUtil {
    * 获取目录下文件路径列表
    *
    * @param dirPath 指定的目录路径
-   * @param ext     扩展名(不考虑扩展名,设为null)
+   * @param extList 扩展名列表(不考虑扩展名,设为null)
    * @return 目录下的文件列表
    */
-  public static List<String> getChildFilePathList(final String dirPath, final String ext) {
+  public static List<String> listFiles(final String dirPath, final List<String> extList) {
     try {
       List<String> filePathList = new ArrayList<>();
-      File dirFile = new File(dirPath);
+      File dir = new File(dirPath);
 
-      if (dirFile.exists() && dirFile.isDirectory()) {
-        File[] fileArrays = dirFile.listFiles();
+      if (dir.exists() && dir.isDirectory()) {
+        File[] fileArrays = dir.listFiles();
         if (fileArrays != null && fileArrays.length > 0) {
           String iFilePath;
           for (File iFile : fileArrays) {
             iFilePath = iFile.getAbsolutePath();
             if (!iFile.getName().startsWith(EXCLUDE_PREFIX)) {
-              if (StringUtil.isEmpty(ext)) {
+              if (ListUtil.isEmpty(extList)) {
                 filePathList.add(iFilePath);
-              } else if (StringUtil.notEmpty(ext) && ext.equalsIgnoreCase(getExtension(iFile.getName()))) {
+              } else if (ListUtil.nonEmpty(extList) && StringUtil.isContains(getExtension(iFile.getName()), extList, true)) {
                 filePathList.add(iFilePath);
               }
             }

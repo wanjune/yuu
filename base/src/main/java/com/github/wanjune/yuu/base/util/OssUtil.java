@@ -251,10 +251,7 @@ public class OssUtil {
    */
   public String getParent(String ossFileOrDir) {
     try {
-      String strFilePath = ossFileOrDir;
-      if (strFilePath.endsWith(FileUtil.SEPARATOR)) {
-        strFilePath = strFilePath.substring(0, strFilePath.lastIndexOf(FileUtil.SEPARATOR));
-      }
+      String strFilePath = StringUtil.removeLast(ossFileOrDir, FileUtil.SEPARATOR); // 去除尾部分隔符
       return strFilePath.substring(0, strFilePath.lastIndexOf(FileUtil.SEPARATOR));
     } catch (Exception ex) {
       throw new OssException(String.format("获取上级目录[%s]失败", ossFileOrDir), ex);

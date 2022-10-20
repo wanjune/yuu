@@ -69,16 +69,13 @@ public class HttpUtil {
 
   /**
    * 清理URI
+   * <p>自行添加其他规则<p/>
    *
    * @param uri 请求URI
    * @return 标准URI
    */
   public static String cleanUri(final String uri) {
-    String strUri = uri;
-    if (strUri.endsWith(CstUtil.SLASH)) {
-      strUri = uri.substring(0, strUri.length() - 1);
-    }
-    return strUri;
+    return StringUtil.removeLast(uri, CstUtil.SLASH);
   }
 
 }
