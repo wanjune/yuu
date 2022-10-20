@@ -84,27 +84,26 @@ public class StringUtil {
    * <p>头尾字符相同(单引号等,双引号[半角/全角],大括号[半角/全角],中括号[半角/全角]等)</p>
    *
    * @param string  待处理的字符串
-   * @param strChar 头尾符号
+   * @param chars 头尾符号
    * @return 处理后的字符串
    */
-  public static String trimFirstAndLastChar(final String string, final String strChar) {
+  public static String trimFirstAndLastChar(final String string, final String chars) {
     // 首尾符号
-    String charFirst = EMPTY;
-    String charLast = EMPTY;
-    if (length(strChar) == 1) {
-      charFirst = strChar;
-      charLast = strChar;
-    } else if (length(strChar) == 2) {
-      charFirst = strChar.substring(0, 1);
-      charLast = strChar.substring(1);
-    } else {
-      return string;
+    String first = EMPTY;
+    String last = EMPTY;
+    if (length(chars) == 1) {
+      first = chars;
+      last = chars;
+    } else if (length(chars) == 2) {
+      first = chars.substring(0, 1);
+      last = chars.substring(1);
     }
+
     // 字符处理
-    if (length(string) < 2 || isBlank(charFirst) || isBlank(charLast) || !(string.startsWith(charFirst) && string.endsWith(charLast))) {
+    if (length(string) < 2 || isBlank(first) || isBlank(last) || !(string.startsWith(first) && string.endsWith(last))) {
       return string;
     } else {
-      return string.substring(0, string.lastIndexOf(charLast)).substring(string.indexOf(charFirst) + 1);
+      return string.substring(0, string.lastIndexOf(last)).substring(string.indexOf(first) + 1);
     }
   }
 
