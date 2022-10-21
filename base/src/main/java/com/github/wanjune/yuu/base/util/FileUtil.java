@@ -161,7 +161,7 @@ public class FileUtil {
    * 获取目录下文件路径列表
    *
    * @param dirPath 指定的目录路径
-   * @param extList 扩展名列表(不考虑扩展名,设为null)
+   * @param extList 扩展名列表(null->所有文件)
    * @return 目录下的文件列表
    */
   public static List<String> listFiles(final String dirPath, final List<String> extList) {

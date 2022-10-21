@@ -12,49 +12,51 @@ import java.util.Map;
 public class MapUtil {
 
   /**
-   * 判断Map是否为空
+   * 判断是否为空
    *
    * @param map Map对象
    * @param <K> 键的类型
    * @param <V> 值的类型
    * @return true:null或数据为空 / false:不为空且有数据
    */
-  public static <K, V> boolean isEmpty(Map<K, V> map) {
+  public static <K, V> boolean isEmpty(final Map<K, V> map) {
     return map == null || map.isEmpty();
   }
 
   /**
-   * 判断Map是否不为空
+   * 判断是否非空
    *
    * @param map Map对象
    * @param <K> 键的类型
    * @param <V> 值的类型
    * @return true:null或数据为空 / false:不为空且有数据
    */
-  public static <K, V> boolean nonEmpty(Map<K, V> map) {
+  public static <K, V> boolean nonEmpty(final Map<K, V> map) {
     return !isEmpty(map);
   }
 
   /**
-   * 取得Map中的指定键的值(Object)
+   * 取得指定键的值
    *
-   * @param map Map
+   * @param map Map对象
    * @param key 键
-   * @return 值(Object)
+   * @return 值
    */
-  public static <K, V> V get(Map<K, V> map, K key) {
+  public static <K, V> V get(final Map<K, V> map, final K key) {
     return get(map, key, null);
   }
 
   /**
-   * 取得Map中的指定键的值(Object)
+   * 取得指定键的值
+   * <p>不存在/空,使用默认值替代</p>
    *
-   * @param map Map
-   * @param key 键
-   * @return 值(Object)
+   * @param map          Map
+   * @param key          键
+   * @param defaultValue 默认值
+   * @return 值
    */
-  public static <K, V> V get(Map<K, V> map, K key, V defValue) {
-    return map == null || key == null || !map.containsKey(key) ? defValue : map.getOrDefault(key, defValue);
+  public static <K, V> V get(final Map<K, V> map, final K key, final V defaultValue) {
+    return map == null || key == null || !map.containsKey(key) ? defaultValue : map.getOrDefault(key, defaultValue);
   }
 
 
@@ -85,7 +87,8 @@ public class MapUtil {
    * @param <V> 值的类型
    * @return Map对象
    */
-  public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1, final K k2, final V v2, final K k3, final V v3, final K k4, final V v4, final K k5, final V v5,
+                                    final K k6, final V v6, final K k7, final V v7, final K k8, final V v8, final K k9, final V v9, final K k10, final V v10) {
     return new HashMap<K, V>() {{
       put(k1, v1);
       put(k2, v2);
@@ -100,7 +103,8 @@ public class MapUtil {
     }};
   }
 
-  public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1, final K k2, final V v2, final K k3, final V v3, final K k4, final V v4, final K k5, final V v5,
+                                    final K k6, final V v6, final K k7, final V v7, final K k8, final V v8, final K k9, final V v9) {
     return new HashMap<K, V>() {{
       put(k1, v1);
       put(k2, v2);
@@ -114,7 +118,8 @@ public class MapUtil {
     }};
   }
 
-  public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1, final K k2, final V v2, final K k3, final V v3, final K k4, final V v4, final K k5,
+                                    final V v5, final K k6, final V v6, final K k7, final V v7, final K k8, final V v8) {
     return new HashMap<K, V>() {{
       put(k1, v1);
       put(k2, v2);
@@ -127,7 +132,8 @@ public class MapUtil {
     }};
   }
 
-  public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1, final K k2, final V v2, final K k3, final V v3, final K k4, final V v4, final K k5, final V v5,
+                                    final K k6, final V v6, final K k7, final V v7) {
     return new HashMap<K, V>() {{
       put(k1, v1);
       put(k2, v2);
@@ -139,7 +145,8 @@ public class MapUtil {
     }};
   }
 
-  public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1, final K k2, final V v2, final K k3, final V v3, final K k4, final V v4, final K k5, final V v5,
+                                    final K k6, final V v6) {
     return new HashMap<K, V>() {{
       put(k1, v1);
       put(k2, v2);
@@ -150,7 +157,7 @@ public class MapUtil {
     }};
   }
 
-  public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1, final K k2, final V v2, final K k3, final V v3, final K k4, final V v4, final K k5, final V v5) {
     return new HashMap<K, V>() {{
       put(k1, v1);
       put(k2, v2);
@@ -160,7 +167,7 @@ public class MapUtil {
     }};
   }
 
-  public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1, final K k2, final V v2, final K k3, final V v3, final K k4, final V v4) {
     return new HashMap<K, V>() {{
       put(k1, v1);
       put(k2, v2);
@@ -169,7 +176,7 @@ public class MapUtil {
     }};
   }
 
-  public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1, final K k2, final V v2, final K k3, final V v3) {
     return new HashMap<K, V>() {{
       put(k1, v1);
       put(k2, v2);
@@ -177,14 +184,14 @@ public class MapUtil {
     }};
   }
 
-  public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1, final K k2, final V v2) {
     return new HashMap<K, V>() {{
       put(k1, v1);
       put(k2, v2);
     }};
   }
 
-  public static <K, V> Map<K, V> of(K k1, V v1) {
+  public static <K, V> Map<K, V> of(final K k1, final V v1) {
     return new HashMap<K, V>() {{
       put(k1, v1);
     }};

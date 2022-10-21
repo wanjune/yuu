@@ -44,15 +44,15 @@ public class StringUtil {
   /**
    * 获取实际字符串(带参数的字符串以[{}]变量形式的参数，变为实际字符）
    *
-   * @param string   带参数变量的字符串
-   * @param objParam 参数对象(Map类型)
+   * @param string 带参数变量的字符串
+   * @param params 参数对象(Map类型)
    * @return 真实字符串
    */
-  public static String instance(final String string, final Map<String, Object> objParam) {
+  public static String instance(final String string, final Map<String, Object> params) {
     String strResult = string;
-    if (notEmpty(string) && MapUtil.nonEmpty(objParam)) {
-      for (String itemKey : objParam.keySet()) {
-        strResult = strResult.replaceAll(CstUtil.CURLY_BRACKET_PREFIX + itemKey + CstUtil.CURLY_BRACKET_SUFFIX, objParam.get(itemKey).toString());
+    if (notEmpty(string) && MapUtil.nonEmpty(params)) {
+      for (String itemKey : params.keySet()) {
+        strResult = strResult.replaceAll(CstUtil.CURLY_BRACKET_PREFIX + itemKey + CstUtil.CURLY_BRACKET_SUFFIX, params.get(itemKey).toString());
       }
     }
     return strResult;
@@ -124,11 +124,11 @@ public class StringUtil {
    * <p>匹配->移除;不匹配->原字符串</p>
    *
    * @param string 待处理的字符串
-   * @param last   要移除的尾部字符串
+   * @param end    要移除的尾部字符串
    * @return 处理后的字符串
    */
-  public static String removeEnd(final String string, final String last) {
-    return isEmpty(string) || isEmpty(last) || !string.endsWith(last) ? string : string.substring(0, string.lastIndexOf(last));
+  public static String removeEnd(final String string, final String end) {
+    return isEmpty(string) || isEmpty(end) || !string.endsWith(end) ? string : string.substring(0, string.lastIndexOf(end));
   }
 
   /**
@@ -141,14 +141,14 @@ public class StringUtil {
     if (isEmpty(string)) return string;
 
     StringBuilder sb = new StringBuilder(string.length());
-    char[] charArray = string.toCharArray();
-    for (char charItem : charArray) {
-      if (ASCII_HALFWIDTH_SPACE == charItem) { // 半角[Space](ASCII): 32
+    char[] arrays = string.toCharArray();
+    for (char item : arrays) {
+      if (ASCII_HALFWIDTH_SPACE == item) { // 半角[Space](ASCII): 32
         sb.append(ASCII_FULL_WIDTH_SPACE);
-      } else if ((charItem >= ASCII_HALF_WIDTH_START) && (charItem <= ASCII_HALF_WIDTH_END)) { // 半角(ASCII): [!](33) ~ [~](126)
-        sb.append((char) (charItem + ASCII_HALF_WITH_FULL_OFFSET));
+      } else if ((item >= ASCII_HALF_WIDTH_START) && (item <= ASCII_HALF_WIDTH_END)) { // 半角(ASCII): [!](33) ~ [~](126)
+        sb.append((char) (item + ASCII_HALF_WITH_FULL_OFFSET));
       } else {
-        sb.append(charItem);
+        sb.append(item);
       }
     }
     return sb.toString();
@@ -164,14 +164,14 @@ public class StringUtil {
     if (isEmpty(string)) return string;
 
     StringBuilder sb = new StringBuilder(string.length());
-    char[] charArray = string.toCharArray();
-    for (char charItem : charArray) {
-      if (ASCII_FULL_WIDTH_SPACE == charItem) {
+    char[] arrays = string.toCharArray();
+    for (char item : arrays) {
+      if (ASCII_FULL_WIDTH_SPACE == item) {
         sb.append(ASCII_HALFWIDTH_SPACE); // 全角[Space](ASCII): 12288
-      } else if (charItem >= ASCII_FULL_WIDTH_START && charItem <= ASCII_FULL_WIDTH_END) {
-        sb.append((char) (charItem - ASCII_HALF_WITH_FULL_OFFSET)); // 全角(ASCII): [！](65281) ~ [～](65374)
+      } else if (item >= ASCII_FULL_WIDTH_START && item <= ASCII_FULL_WIDTH_END) {
+        sb.append((char) (item - ASCII_HALF_WITH_FULL_OFFSET)); // 全角(ASCII): [！](65281) ~ [～](65374)
       } else {
-        sb.append(charItem);
+        sb.append(item);
       }
     }
     return sb.toString();
@@ -187,8 +187,8 @@ public class StringUtil {
    */
   public static String cleanUnicode(final String string) {
     if (notBlank(string) && !CstUtil.DATA_NULL.equalsIgnoreCase(string.trim())) {
-      String strText = string.replaceAll(REGEX_UNICODE, EMPTY).replaceAll(REGEX_UNICODE, EMPTY).trim();
-      return CstUtil.DATA_NULL.equalsIgnoreCase(strText) ? null : strText;
+      String reString = string.replaceAll(REGEX_UNICODE, EMPTY).replaceAll(REGEX_UNICODE, EMPTY).trim();
+      return CstUtil.DATA_NULL.equalsIgnoreCase(reString) ? null : reString;
     } else {
       return CstUtil.DATA_NULL.equalsIgnoreCase(string) ? null : string;
     }
@@ -230,11 +230,11 @@ public class StringUtil {
   @SuppressWarnings("ALL")
   public static String cleanText(final String string) {
     if (notEmpty(string) && !CstUtil.DATA_NULL.equalsIgnoreCase(string.trim())) {
-      String strText = cleanControl(toHalfwidth(string));
-      if (notEmpty(strText)) {
-        strText = strText.replaceAll(String.valueOf(ASCII_HALFWIDTH_SPACE), EMPTY);
+      String reString = cleanControl(toHalfwidth(string));
+      if (notEmpty(reString)) {
+        reString = reString.replaceAll(String.valueOf(ASCII_HALFWIDTH_SPACE), EMPTY);
       }
-      return CstUtil.DATA_NULL.equalsIgnoreCase(strText) ? null : strText;
+      return CstUtil.DATA_NULL.equalsIgnoreCase(reString) ? null : reString;
     } else {
       return CstUtil.DATA_NULL.equalsIgnoreCase(string) ? null : string;
     }
@@ -266,20 +266,20 @@ public class StringUtil {
    * @return 字符串
    */
   public static <T> String splitList(final List<T> list, final String split) {
-    String strResult = EMPTY;
-    String strSplit = isEmpty(split) ? CstUtil.COMMA : split;
+    String result = EMPTY;
+    String reSplit = isEmpty(split) ? CstUtil.COMMA : split;
     int size = ListUtil.size(list);
 
     if (size == 1) {
-      strResult = String.valueOf(list.get(0));
+      result = String.valueOf(list.get(0));
     } else if (size > 1) {
       for (int i = 0; i < size; i++) {
-        if (i > 0) strResult = strResult.concat(strSplit);
-        strResult = strResult.concat(String.valueOf(list.get(i)));
+        if (i > 0) result = result.concat(reSplit);
+        result = result.concat(String.valueOf(list.get(i)));
       }
     }
 
-    return strResult;
+    return result;
   }
 
   /**

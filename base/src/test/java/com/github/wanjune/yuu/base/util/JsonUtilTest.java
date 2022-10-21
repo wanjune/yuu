@@ -1,6 +1,5 @@
 package com.github.wanjune.yuu.base.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.wanjune.yuu.base.model.MessageModel;
 import org.junit.jupiter.api.Assertions;

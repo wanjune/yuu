@@ -27,16 +27,10 @@ public class OkHttpUtil {
   public static final String DELETE = "DELETE";
   public static final String PATCH = "PATCH";
 
-  //public static final String NOT_RESPONDING = "Not Responding";
   public static final String NOT_RESPONDING = "";
 
   private final OkHttpClient okHttpClient;
   private boolean isPrintLog;
-
-  public OkHttpUtil(OkHttpClient okHttpClient) {
-    this.okHttpClient = okHttpClient;
-    this.isPrintLog = false;
-  }
 
   public OkHttpUtil(OkHttpClient okHttpClient, boolean isPrintLog) {
     this.okHttpClient = okHttpClient;

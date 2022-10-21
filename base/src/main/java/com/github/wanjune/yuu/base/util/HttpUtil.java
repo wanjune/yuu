@@ -69,7 +69,7 @@ public class HttpUtil {
 
   /**
    * 清理URI
-   * <p>自行添加其他规则<p/>
+   * <p>其他规则,自行添加<p/>
    *
    * @param uri 请求URI
    * @return 标准URI

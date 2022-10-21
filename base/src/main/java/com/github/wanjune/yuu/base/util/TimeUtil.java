@@ -87,11 +87,11 @@ public class TimeUtil {
   /**
    * 获取系统当前日时的格式化字符串
    *
-   * @param dtFormat 日期格式
+   * @param format 日期格式
    * @return 当前日时字符串
    */
-  public static String getDateTimeNowFormat(String dtFormat) {
-    return formatDateTime(getDateTimeNow(), dtFormat);
+  public static String getDateTimeNowFormat(final String format) {
+    return formatDateTime(getDateTimeNow(), format);
   }
 
   /**
@@ -106,21 +106,21 @@ public class TimeUtil {
   /**
    * 转换为是日时对象
    *
-   * @param strDateTime 日时字符串
-   * @param dtFormat    日时格式
+   * @param dateTimeString 日时字符串
+   * @param format         日时格式
    * @return 指定格式的日时字符串
    */
-  public static LocalDateTime parseDateTime(String strDateTime, String dtFormat) {
+  public static LocalDateTime parseDateTime(final String dateTimeString, final String format) {
     try {
-      DateTimeFormatter dtFormatter;
-      if (dtFormat.endsWith(".SSS")) {
-        dtFormatter = new DateTimeFormatterBuilder().appendPattern(dtFormat.replace(".SSS", StringUtil.EMPTY)).appendLiteral(".").appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
-      } else if (dtFormat.endsWith("SSS")) {
-        dtFormatter = new DateTimeFormatterBuilder().appendPattern(dtFormat.replace("SSS", StringUtil.EMPTY)).appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
+      DateTimeFormatter formatter;
+      if (format.endsWith(".SSS")) {
+        formatter = new DateTimeFormatterBuilder().appendPattern(format.replace(".SSS", StringUtil.EMPTY)).appendLiteral(".").appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
+      } else if (format.endsWith("SSS")) {
+        formatter = new DateTimeFormatterBuilder().appendPattern(format.replace("SSS", StringUtil.EMPTY)).appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
       } else {
-        dtFormatter = DateTimeFormatter.ofPattern(dtFormat);
+        formatter = DateTimeFormatter.ofPattern(format);
       }
-      return LocalDateTime.parse(strDateTime, dtFormatter);
+      return LocalDateTime.parse(dateTimeString, formatter);
     } catch (Exception ex) {
       // Nothing
     }
@@ -131,17 +131,15 @@ public class TimeUtil {
    * 转换为是日时对象
    * <p>尝试使用FMT_DT_LIST列表中格式转换</p>
    *
-   * @param strDateTime 日时字符串
+   * @param dateTimeString 日时字符串
    * @return 指定格式的日时字符串
    */
-  public static LocalDateTime parseDateTime(String strDateTime) {
+  public static LocalDateTime parseDateTime(final String dateTimeString) {
     LocalDateTime dateTime = null;
-    for (String dtFormat : FMT_DT_LIST) {
+    for (String format : FMT_DT_LIST) {
       try {
-        dateTime = parseDateTime(strDateTime, dtFormat);
-        if (dateTime != null) {
-          break;
-        }
+        dateTime = parseDateTime(dateTimeString, format);
+        if (dateTime != null) break;
       } catch (Exception ex) {
         // NOTHING
       }
@@ -152,12 +150,12 @@ public class TimeUtil {
   /**
    * 将Timestamp转换为日时对象
    *
-   * @param longTimestamp Timestamp毫秒
+   * @param timeStampMillis Timestamp毫秒
    * @return 日时对象
    */
-  public static LocalDateTime parseDateTime(Long longTimestamp) {
+  public static LocalDateTime parseDateTime(final Long timeStampMillis) {
     try {
-      return LocalDateTime.ofInstant(Instant.ofEpochMilli(longTimestamp), ZoneId.systemDefault());
+      return LocalDateTime.ofInstant(Instant.ofEpochMilli(timeStampMillis), ZoneId.systemDefault());
     } catch (Exception ex) {
       return null;
     }
@@ -166,41 +164,41 @@ public class TimeUtil {
   /**
    * 根据日时输出指定格式的字符串
    *
-   * @param inLocalDateTime 指定日时
-   * @param dtFormat        日时格式
+   * @param dateTime 指定日时
+   * @param format   日时格式
    * @return 指定格式的日时字符串
    */
-  public static String formatDateTime(LocalDateTime inLocalDateTime, String dtFormat) {
-    DateTimeFormatter dtFormatter;
-    if (dtFormat.endsWith(".SSS")) {
-      dtFormatter = new DateTimeFormatterBuilder().appendPattern(dtFormat.replace(".SSS", StringUtil.EMPTY)).appendLiteral(".").appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
-    } else if (dtFormat.endsWith("SSS")) {
-      dtFormatter = new DateTimeFormatterBuilder().appendPattern(dtFormat.replace("SSS", StringUtil.EMPTY)).appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
+  public static String formatDateTime(final LocalDateTime dateTime, final String format) {
+    DateTimeFormatter formatter;
+    if (format.endsWith(".SSS")) {
+      formatter = new DateTimeFormatterBuilder().appendPattern(format.replace(".SSS", StringUtil.EMPTY)).appendLiteral(".").appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
+    } else if (format.endsWith("SSS")) {
+      formatter = new DateTimeFormatterBuilder().appendPattern(format.replace("SSS", StringUtil.EMPTY)).appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
     } else {
-      dtFormatter = DateTimeFormatter.ofPattern(dtFormat);
+      formatter = DateTimeFormatter.ofPattern(format);
     }
-    return inLocalDateTime.format(dtFormatter);
+    return dateTime.format(formatter);
   }
 
   /**
    * 是合法的日时
    *
-   * @param strDateTime 日时字符串
-   * @param dtFormat    日时格式
+   * @param dateTimeString 日时字符串
+   * @param format         日时格式
    * @return 验证结果
    */
-  public static boolean isDateTime(String strDateTime, String dtFormat) {
-    return parseDateTime(strDateTime, dtFormat) != null;
+  public static boolean isDateTime(final String dateTimeString, final String format) {
+    return parseDateTime(dateTimeString, format) != null;
   }
 
   /**
    * 获取系统当前日期的格式化字符串
    *
-   * @param dtFormat 日时格式
+   * @param format 日时格式
    * @return 当前日期的字符串
    */
-  public static String getDateNowFormat(String dtFormat) {
-    return formatDate(getDateNow(), dtFormat);
+  public static String getDateNowFormat(final String format) {
+    return formatDate(getDateNow(), format);
   }
 
   /**
@@ -215,13 +213,13 @@ public class TimeUtil {
   /**
    * 转换为日期对象
    *
-   * @param strDate  日期字符串
-   * @param dtFormat 日期格式
+   * @param dateString 日期字符串
+   * @param format     日期格式
    * @return 日期
    */
-  public static LocalDate parseDate(String strDate, String dtFormat) {
+  public static LocalDate parseDate(final String dateString, final String format) {
     try {
-      return LocalDate.parse(strDate, DateTimeFormatter.ofPattern(dtFormat));
+      return LocalDate.parse(dateString, DateTimeFormatter.ofPattern(format));
     } catch (Exception ex) {
       // Nothing
     }
@@ -232,14 +230,14 @@ public class TimeUtil {
    * 转换为日期对象
    * <p>尝试使用FMT_D_LIST列表中格式转换</p>
    *
-   * @param strDate 日期字符串
+   * @param dateString 日期字符串
    * @return 日期
    */
-  public static LocalDate parseDate(String strDate) {
+  public static LocalDate parseDate(final String dateString) {
     LocalDate date = null;
-    for (String dtFormat : FMT_D_LIST) {
+    for (String format : FMT_D_LIST) {
       try {
-        date = parseDate(strDate, dtFormat);
+        date = parseDate(dateString, format);
         if (date != null) {
           break;
         }
@@ -253,23 +251,23 @@ public class TimeUtil {
   /**
    * 根据日期输出指定格式的字符串
    *
-   * @param inLocalDate 指定日期
-   * @param dtFormat    日期格式
+   * @param date   指定日期
+   * @param format 日期格式
    * @return 指定格式的日期字符串
    */
-  public static String formatDate(LocalDate inLocalDate, String dtFormat) {
-    return inLocalDate.format(DateTimeFormatter.ofPattern(dtFormat));
+  public static String formatDate(final LocalDate date, final String format) {
+    return date.format(DateTimeFormatter.ofPattern(format));
   }
 
   /**
    * 是合法的日期
    *
-   * @param strDate  日期字符串
-   * @param dtFormat 日期格式
+   * @param dateString 日期字符串
+   * @param format     日期格式
    * @return 验证结果
    */
-  public static boolean isDate(String strDate, String dtFormat) {
-    return parseDate(strDate, dtFormat) != null;
+  public static boolean isDate(final String dateString, final String format) {
+    return parseDate(dateString, format) != null;
   }
 
   /**
@@ -292,25 +290,19 @@ public class TimeUtil {
    * "年:yyyy 季度:qr" -- 年:2018 季度:2
    * </p>
    *
-   * @param inLocalDate 指定日期
-   * @param qrFormat    季度格式
+   * @param date     指定日期
+   * @param qrFormat 季度格式
    * @return 指定格式的季度字符串
    */
   @SuppressWarnings("ALL")
-  public static String getQuarterFormat(LocalDate inLocalDate, String qrFormat) {
+  public static String getQuarterFormat(final LocalDate date, final String qrFormat) {
+    // 日期为空 -> null
+    if (date == null) return StringUtil.EMPTY;
+    // 非法季度格式
+    String reQrFormat = StringUtil.notEmpty(qrFormat) && StringUtil.isContains(qrFormat, ListUtil.asList("yyyy", "qr"), true) ? qrFormat : FMT_QR_STD;
 
-    if (inLocalDate == null) {
-      return StringUtil.EMPTY;
-    }
-
-    String strQrFormat = qrFormat;
-    if (StringUtil.isEmpty(qrFormat) || !StringUtil.isContains(strQrFormat, ListUtil.asList("yyyy", "qr"), true)) {
-      strQrFormat = FMT_QR_STD;
-    }
-
-    String year = String.valueOf(inLocalDate.getYear());
-    int month = inLocalDate.getMonthValue();
-
+    // 计算季度
+    int month = date.getMonthValue();
     String quarter;
     if (month < 4) {
       quarter = "1";
@@ -322,7 +314,7 @@ public class TimeUtil {
       quarter = "4";
     }
 
-    return strQrFormat.replace("yyyy", year).replace("QR", "Q".concat(quarter)).replace("qr", quarter);
+    return reQrFormat.replace("yyyy", String.valueOf(date.getYear())).replace("QR", "Q".concat(quarter)).replace("qr", quarter);
   }
 
 }

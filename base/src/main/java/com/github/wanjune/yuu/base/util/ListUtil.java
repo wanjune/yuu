@@ -47,7 +47,7 @@ public class ListUtil {
   }
 
   /**
-   * 字符串形式的数组转换为字符串列表
+   * 字符串形式的数组转换为列表
    *
    * @param arraysString 字符串形式的数组
    * @return 字符串列表

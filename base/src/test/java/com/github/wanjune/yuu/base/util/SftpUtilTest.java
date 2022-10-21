@@ -51,37 +51,37 @@ class SftpUtilTest {
   @Test
   void put() throws Exception {
     sftpUtil.rm("/var/sftpfilestore/sftpuser/test");
-    Assertions.assertFalse(sftpUtil.isExist("/var/sftpfilestore/sftpuser/test"));
+    Assertions.assertFalse(sftpUtil.isExists("/var/sftpfilestore/sftpuser/test"));
     sftpUtil.put(FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx"), "/var/sftpfilestore/sftpuser/test/test_file-0913.xlsx", null, null);
-    Assertions.assertTrue(sftpUtil.isExist("/var/sftpfilestore/sftpuser/test/test_file-0913.xlsx"));
+    Assertions.assertTrue(sftpUtil.isExists("/var/sftpfilestore/sftpuser/test/test_file-0913.xlsx"));
 
     sftpUtil.rm("./test");
-    Assertions.assertFalse(sftpUtil.isExist("./test"));
+    Assertions.assertFalse(sftpUtil.isExists("./test"));
     sftpUtil.put(FileUtil.getChildPath(LOCAL_DIR, "test_file-0913.xlsx"), "./test/test_file-0913.xlsx", null, null);
-    Assertions.assertTrue(sftpUtil.isExist("./test/test_file-0913.xlsx"));
+    Assertions.assertTrue(sftpUtil.isExists("./test/test_file-0913.xlsx"));
 
     sftpUtil.rm("/var/sftpfilestore/sftpuser/test");
-    Assertions.assertFalse(sftpUtil.isExist("/var/sftpfilestore/sftpuser/test"));
+    Assertions.assertFalse(sftpUtil.isExists("/var/sftpfilestore/sftpuser/test"));
     sftpUtil.put(LOCAL_DIR, "/var/sftpfilestore/sftpuser/test", null, null);
-    Assertions.assertTrue(sftpUtil.isExist("/var/sftpfilestore/sftpuser/test"));
+    Assertions.assertTrue(sftpUtil.isExists("/var/sftpfilestore/sftpuser/test"));
 
     sftpUtil.rm("./test");
-    Assertions.assertFalse(sftpUtil.isExist("./test"));
+    Assertions.assertFalse(sftpUtil.isExists("./test"));
     sftpUtil.put(LOCAL_DIR, "./test", null, null);
-    Assertions.assertTrue(sftpUtil.isExist("./test"));
+    Assertions.assertTrue(sftpUtil.isExists("./test"));
   }
 
   @Test
   void isExist() {
-    Assertions.assertTrue(sftpUtil.isExist("/var/sftpfilestore/sftpuser/dev"));
-    Assertions.assertFalse(sftpUtil.isExist("/var/sftpfilestore/sftpuser/test"));
-    Assertions.assertTrue(sftpUtil.isExist("/var/sftpfilestore/sftpuser/dev/test_file-0913.xlsx"));
-    Assertions.assertFalse(sftpUtil.isExist("/var/sftpfilestore/sftpuser/dev/test_file-0913.pptx"));
+    Assertions.assertTrue(sftpUtil.isExists("/var/sftpfilestore/sftpuser/dev"));
+    Assertions.assertFalse(sftpUtil.isExists("/var/sftpfilestore/sftpuser/test"));
+    Assertions.assertTrue(sftpUtil.isExists("/var/sftpfilestore/sftpuser/dev/test_file-0913.xlsx"));
+    Assertions.assertFalse(sftpUtil.isExists("/var/sftpfilestore/sftpuser/dev/test_file-0913.pptx"));
 
-    Assertions.assertTrue(sftpUtil.isExist("./dev"));
-    Assertions.assertFalse(sftpUtil.isExist("./test"));
-    Assertions.assertTrue(sftpUtil.isExist("./dev/test_file-0913.xlsx"));
-    Assertions.assertFalse(sftpUtil.isExist("./dev/test_file-0913.pptx"));
+    Assertions.assertTrue(sftpUtil.isExists("./dev"));
+    Assertions.assertFalse(sftpUtil.isExists("./test"));
+    Assertions.assertTrue(sftpUtil.isExists("./dev/test_file-0913.xlsx"));
+    Assertions.assertFalse(sftpUtil.isExists("./dev/test_file-0913.pptx"));
   }
 
   @Test
@@ -100,17 +100,17 @@ class SftpUtilTest {
   @Test
   void immediateGet() throws Exception {
     // 目录下载
-    SftpUtil.immediateGet(HOST, PORT, USERNAME, PASSWORD, "./test", LOCAL_DIR, ListUtil.asList("test_file-0913.xlsx"), ListUtil.asList("pptx"), true);
+    SftpUtil.get(HOST, PORT, USERNAME, PASSWORD, "./test", LOCAL_DIR, ListUtil.asList("test_file-0913.xlsx"), ListUtil.asList("pptx"), true);
     // 文件下载
-    SftpUtil.immediateGet(HOST, PORT, USERNAME, PASSWORD, "/var/sftpfilestore/sftpuser/test/test_file-0913.xlsx", LOCAL_DIR + "/test_file-0913.xlsx", null, null, true);
+    SftpUtil.get(HOST, PORT, USERNAME, PASSWORD, "/var/sftpfilestore/sftpuser/test/test_file-0913.xlsx", LOCAL_DIR + "/test_file-0913.xlsx", null, null, true);
   }
 
   @Test
   void immediatePut() throws Exception {
     // 目录上传
-    SftpUtil.immediatePut(HOST, PORT, USERNAME, PASSWORD, LOCAL_DIR, "./dev", ListUtil.asList("test_file-0913.xlsx"), ListUtil.asList("xls"), true);
+    SftpUtil.put(HOST, PORT, USERNAME, PASSWORD, LOCAL_DIR, "./dev", ListUtil.asList("test_file-0913.xlsx"), ListUtil.asList("xls"), true);
     // 文件上传
-    SftpUtil.immediatePut(HOST, PORT, USERNAME, PASSWORD, LOCAL_DIR + "/test_file-0913.xlsx", "/var/sftpfilestore/sftpuser/dev/test_file-0913.xlsx", null, null, true);
-    SftpUtil.immediatePut(HOST, PORT, USERNAME, PASSWORD, LOCAL_DIR + "/AUDIT_APP.xls", "/var/sftpfilestore/sftpuser/dev/AUDIT_APP.xls", null, null, true);
+    SftpUtil.put(HOST, PORT, USERNAME, PASSWORD, LOCAL_DIR + "/test_file-0913.xlsx", "/var/sftpfilestore/sftpuser/dev/test_file-0913.xlsx", null, null, true);
+    SftpUtil.put(HOST, PORT, USERNAME, PASSWORD, LOCAL_DIR + "/AUDIT_APP.xls", "/var/sftpfilestore/sftpuser/dev/AUDIT_APP.xls", null, null, true);
   }
 }
