@@ -2,6 +2,7 @@ package com.github.wanjune.yuu.base.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.wanjune.yuu.base.exception.YuuException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,50 +20,62 @@ public class JsonUtil {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   /**
-   * 将数据对象转换为Json格式的字符串
+   * 对象转换为JSON字符串
    *
-   * @param data 数据对象
-   * @return Json格式的字符串
-   * @throws Exception Exception
+   * @param object 对象
+   * @return JSON字符串
    */
-  public static String writeValueAsString(final Object data) throws Exception {
-    return StringUtil.trimFirstAndLastChar(MAPPER.writeValueAsString(data), CstUtil.DOUBLE_QUOTE);
+  public static String writeValueAsString(final Object object) {
+    try {
+      return StringUtil.trimFirstAndLastChar(MAPPER.writeValueAsString(object), CstUtil.DOUBLE_QUOTE);
+    } catch (Exception ex) {
+      throw new YuuException(String.format("[%S]转换JSON字符串失败", object), ex);
+    }
   }
 
   /**
-   * 获取指定类型数据对象
+   * JSON字符串转换为对象
    *
-   * @param jsonString   Json格式字符串
-   * @param valueTypeRef Json格式字符串
+   * @param jsonString JSON字符串
+   * @param typeRef    对象类型引用
    * @return 数据对象
-   * @throws Exception Exception
    */
-  public static <T> T getType(final String jsonString, final TypeReference<T> valueTypeRef) throws Exception {
-    return StringUtil.isBlank(jsonString) ? null : MAPPER.readValue(jsonString, valueTypeRef);
+  public static <T> T getType(final String jsonString, final TypeReference<T> typeRef) {
+    try {
+      return StringUtil.isBlank(jsonString) ? null : MAPPER.readValue(jsonString, typeRef);
+    } catch (Exception ex) {
+      throw new YuuException(String.format("字符串[%S]转换类型失败", jsonString), ex);
+    }
   }
 
   /**
-   * 获取Map对象
+   * JSON字符串转换为Map
    *
-   * @param jsonString Json标准格式字符串
+   * @param jsonString JSON字符串
    * @return Map对象
-   * @throws Exception Exception
    */
-  public static Map<String, Object> getMap(final String jsonString) throws Exception {
-    return getType(jsonString, new TypeReference<Map<String, Object>>() {
-    });
+  public static Map<String, Object> getMap(final String jsonString) {
+    try {
+      return getType(jsonString, new TypeReference<Map<String, Object>>() {
+      });
+    } catch (Exception ex) {
+      throw new YuuException(String.format("字符串[%S]转换Map失败", jsonString), ex);
+    }
   }
 
   /**
-   * 获取Map对象
+   * JSON字符串转换为Map列表
    *
-   * @param jsonString Json格式字符串
-   * @return Map对象
-   * @throws Exception Exception
+   * @param jsonString JSON字符串
+   * @return Map列表
    */
-  public static List<Map<String, Object>> getMapList(final String jsonString) throws Exception {
-    return getType(jsonString, new TypeReference<ArrayList<Map<String, Object>>>() {
-    });
+  public static List<Map<String, Object>> getMapList(final String jsonString) {
+    try {
+      return getType(jsonString, new TypeReference<ArrayList<Map<String, Object>>>() {
+      });
+    } catch (Exception ex) {
+      throw new YuuException(String.format("字符串[%S]转换Map列表失败", jsonString), ex);
+    }
   }
 
   /**
@@ -75,10 +88,10 @@ public class JsonUtil {
     try {
       MAPPER.readValue(jsonString, new TypeReference<Map<String, Object>>() {
       });
+      return true;
     } catch (Exception ex) {
       return false;
     }
-    return true;
   }
 
   /**
@@ -91,10 +104,10 @@ public class JsonUtil {
     try {
       MAPPER.readValue(jsonString, new TypeReference<ArrayList<Map<String, Object>>>() {
       });
+      return true;
     } catch (Exception ex) {
       return false;
     }
-    return true;
   }
 
 }

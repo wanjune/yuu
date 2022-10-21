@@ -62,9 +62,9 @@ class ListUtilTest {
 
   @Test
   void nonEmpty() {
-    Assertions.assertFalse(ListUtil.nonEmpty(null));
-    Assertions.assertFalse(ListUtil.nonEmpty(new ArrayList<>()));
-    Assertions.assertTrue(ListUtil.nonEmpty(ListUtil.asList("1", "a")));
+    Assertions.assertFalse(ListUtil.notEmpty(null));
+    Assertions.assertFalse(ListUtil.notEmpty(new ArrayList<>()));
+    Assertions.assertTrue(ListUtil.notEmpty(ListUtil.asList("1", "a")));
   }
 
   @Test

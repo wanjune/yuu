@@ -68,7 +68,7 @@ public class StringUtil {
    */
   public static boolean isContains(final String string, final List<String> searchList, final boolean isIgnore) {
     boolean isContained = false;
-    if (notBlank(string) && ListUtil.nonEmpty(searchList)) {
+    if (notBlank(string) && ListUtil.notEmpty(searchList)) {
       for (String searchItem : searchList) {
         if ((isIgnore && string.toLowerCase().contains(searchItem.toLowerCase())) || string.contains(searchItem)) {
           isContained = true;
@@ -108,13 +108,26 @@ public class StringUtil {
   }
 
   /**
-   * 去除字符串尾部字符
+   * 去除字符串头部字符串
+   * <p>匹配->移除;不匹配->原字符串</p>
+   *
+   * @param string 待处理的字符串
+   * @param start  要移除的头部字符串
+   * @return 处理后的字符串
+   */
+  public static String removeStart(final String string, final String start) {
+    return isEmpty(string) || isEmpty(start) || !string.startsWith(start) ? string : string.substring(string.indexOf(start) + length(start));
+  }
+
+  /**
+   * 去除字符串尾部字符串
+   * <p>匹配->移除;不匹配->原字符串</p>
    *
    * @param string 待处理的字符串
    * @param last   要移除的尾部字符串
    * @return 处理后的字符串
    */
-  public static String removeLast(final String string, final String last) {
+  public static String removeEnd(final String string, final String last) {
     return isEmpty(string) || isEmpty(last) || !string.endsWith(last) ? string : string.substring(0, string.lastIndexOf(last));
   }
 

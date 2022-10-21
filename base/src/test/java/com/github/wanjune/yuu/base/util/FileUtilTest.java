@@ -9,10 +9,10 @@ import java.io.IOException;
 class FileUtilTest {
 
   private static final String DIR_PATH = "/tmp";
-  private static final String FILE_PATH_1 = DIR_PATH + FileUtil.SEPARATOR + "20221011/1156." + FileUtil.EXT_CSV;
-  private static final String FILE_PATH_2 = DIR_PATH + FileUtil.SEPARATOR + "20221012/1157." + FileUtil.EXT_TXT;
+  private static final String FILE_PATH_1 = DIR_PATH + FileUtil.PATH_SEPARATOR + "20221011/1156." + FileUtil.EXT_CSV;
+  private static final String FILE_PATH_2 = DIR_PATH + FileUtil.PATH_SEPARATOR + "20221012/1157." + FileUtil.EXT_TXT;
 
-  private static final String FILE_PATH_3 = DIR_PATH + FileUtil.SEPARATOR + "20221013/1410." + FileUtil.EXT_CSV;
+  private static final String FILE_PATH_3 = DIR_PATH + FileUtil.PATH_SEPARATOR + "20221013/1410." + FileUtil.EXT_CSV;
 
   @AfterAll
   public static void tearDown() throws Exception {
@@ -65,15 +65,15 @@ class FileUtilTest {
   @Test
   @Order(5)
   void getParentPath() {
-    Assertions.assertEquals(FileUtil.getParentPath(FILE_PATH_1), DIR_PATH + FileUtil.SEPARATOR + "20221011");
-    Assertions.assertEquals(FileUtil.getParentPath(FILE_PATH_2), DIR_PATH + FileUtil.SEPARATOR + "20221012");
+    Assertions.assertEquals(FileUtil.getParentPath(FILE_PATH_1), DIR_PATH + FileUtil.PATH_SEPARATOR + "20221011");
+    Assertions.assertEquals(FileUtil.getParentPath(FILE_PATH_2), DIR_PATH + FileUtil.PATH_SEPARATOR + "20221012");
   }
 
   @Test
   @Order(7)
   void getChildPath() {
-    Assertions.assertEquals(FileUtil.getChildPath(DIR_PATH + FileUtil.SEPARATOR + "20221011", "1156." + FileUtil.EXT_CSV), FILE_PATH_1);
-    Assertions.assertEquals(FileUtil.getChildPath(DIR_PATH + FileUtil.SEPARATOR + "20221012", "1157." + FileUtil.EXT_TXT), FILE_PATH_2);
+    Assertions.assertEquals(FileUtil.getChildPath(DIR_PATH + FileUtil.PATH_SEPARATOR + "20221011", "1156." + FileUtil.EXT_CSV), FILE_PATH_1);
+    Assertions.assertEquals(FileUtil.getChildPath(DIR_PATH + FileUtil.PATH_SEPARATOR + "20221012", "1157." + FileUtil.EXT_TXT), FILE_PATH_2);
   }
 
   @Test
@@ -89,8 +89,8 @@ class FileUtilTest {
   void getChildFilePathList() {
     fileWrite(FILE_PATH_1);
     fileWrite(FILE_PATH_2);
-    Assertions.assertEquals(FileUtil.listFiles(DIR_PATH + FileUtil.SEPARATOR + "20221011", ListUtil.asList(FileUtil.EXT_CSV)), ListUtil.asList(FILE_PATH_1));
-    Assertions.assertEquals(FileUtil.listFiles(DIR_PATH + FileUtil.SEPARATOR + "20221012", ListUtil.asList(FileUtil.EXT_TXT)), ListUtil.asList(FILE_PATH_2));
+    Assertions.assertEquals(FileUtil.listFiles(DIR_PATH + FileUtil.PATH_SEPARATOR + "20221011", ListUtil.asList(FileUtil.EXT_CSV)), ListUtil.asList(FILE_PATH_1));
+    Assertions.assertEquals(FileUtil.listFiles(DIR_PATH + FileUtil.PATH_SEPARATOR + "20221012", ListUtil.asList(FileUtil.EXT_TXT)), ListUtil.asList(FILE_PATH_2));
   }
 
   @Test

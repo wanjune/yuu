@@ -75,7 +75,7 @@ public class HttpUtil {
    * @return 标准URI
    */
   public static String cleanUri(final String uri) {
-    return StringUtil.removeLast(uri, CstUtil.SLASH);
+    return StringUtil.removeEnd(uri, CstUtil.SLASH);
   }
 
 }

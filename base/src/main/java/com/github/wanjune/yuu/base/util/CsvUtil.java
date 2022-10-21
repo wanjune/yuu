@@ -118,7 +118,7 @@ public class CsvUtil {
         @Override
         public void doAfterAllAnalysed(AnalysisContext context) {
           // 所有行解析完成后,如EXCEL临时数据缓存不为空 -> 存储至CSV
-          if (ListUtil.nonEmpty(cacheDataList)) data2Csv(csvFilePath, csvHeaderList, cacheDataList, unicodeColumns);
+          if (ListUtil.notEmpty(cacheDataList)) data2Csv(csvFilePath, csvHeaderList, cacheDataList, unicodeColumns);
         }
 
         // 自定义格式转换
@@ -150,7 +150,7 @@ public class CsvUtil {
                                                           final List<String> csvHeaderList,
                                                           final List<String> unicodeColumns) throws Exception {
     List<Map<String, String>> reCsvDataList = null;
-    if (ListUtil.nonEmpty(csvDataList) && ListUtil.nonEmpty(csvHeaderList)) {
+    if (ListUtil.notEmpty(csvDataList) && ListUtil.notEmpty(csvHeaderList)) {
       reCsvDataList = new ArrayList<>(csvDataList.size());
       for (Map<String, Object> csvDataItem : csvDataList) {
         reCsvDataList.add(getCsvData(csvDataItem, csvHeaderList, unicodeColumns));

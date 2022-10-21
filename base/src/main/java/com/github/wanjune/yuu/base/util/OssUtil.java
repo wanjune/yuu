@@ -80,7 +80,7 @@ public class OssUtil {
   public void deleteDir(String ossDirPath) {
     try {
       List<String> objPaths = this.listDir(ossDirPath);
-      if (ListUtil.nonEmpty(objPaths)) {
+      if (ListUtil.notEmpty(objPaths)) {
         for (String objPath : objPaths) {
           deleteFile(objPath);
         }
@@ -214,7 +214,7 @@ public class OssUtil {
       if (listObjectsV2Result != null) {
         List<OSSObjectSummary> listOssObj = listObjectsV2Result.getObjectSummaries();
 
-        if (ListUtil.nonEmpty(listOssObj)) {
+        if (ListUtil.notEmpty(listOssObj)) {
           listObjPath = new ArrayList<>();
           for (OSSObjectSummary item : listOssObj) {
             listObjPath.add(item.getKey());
@@ -251,8 +251,8 @@ public class OssUtil {
    */
   public String getParent(String ossFileOrDir) {
     try {
-      String strFilePath = StringUtil.removeLast(ossFileOrDir, FileUtil.SEPARATOR); // 去除尾部分隔符
-      return strFilePath.substring(0, strFilePath.lastIndexOf(FileUtil.SEPARATOR));
+      String strFilePath = StringUtil.removeEnd(ossFileOrDir, FileUtil.PATH_SEPARATOR); // 去除尾部分隔符
+      return strFilePath.substring(0, strFilePath.lastIndexOf(FileUtil.PATH_SEPARATOR));
     } catch (Exception ex) {
       throw new OssException(String.format("获取上级目录[%s]失败", ossFileOrDir), ex);
     }
