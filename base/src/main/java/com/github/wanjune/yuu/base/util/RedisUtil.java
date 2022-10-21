@@ -26,11 +26,11 @@ public class RedisUtil {
 
   private static final Long SCAN_OPTION_COUNT = 10000L;
 
-  private final StringRedisTemplate stringRedisTemplate;
+  private final StringRedisTemplate redisTemplate;
 
   @Autowired
-  public RedisUtil(StringRedisTemplate stringRedisTemplate) {
-    this.stringRedisTemplate = stringRedisTemplate;
+  public RedisUtil(StringRedisTemplate redisTemplate) {
+    this.redisTemplate = redisTemplate;
   }
 
   /**
@@ -41,7 +41,7 @@ public class RedisUtil {
    */
   public String get(String key) {
     try {
-      return stringRedisTemplate.opsForValue().get(key);
+      return redisTemplate.opsForValue().get(key);
     } catch (Exception ex) {
       throw new RedisException(String.format("读取[key=%s]失败", key), ex);
     }
@@ -53,12 +53,12 @@ public class RedisUtil {
    * @param key   Redis键
    * @param value Redis值
    */
-  public <T> void set(String key, T value) {
+  public void set(String key, Object value) {
     try {
       if (value instanceof String) {
-        stringRedisTemplate.opsForValue().set(key, String.valueOf(value));
+        redisTemplate.opsForValue().set(key, String.valueOf(value));
       } else {
-        stringRedisTemplate.opsForValue().set(key, JsonUtil.writeValueAsString(value));
+        redisTemplate.opsForValue().set(key, JsonUtil.writeValueAsString(value));
       }
     } catch (Exception ex) {
       throw new RedisException(String.format("写入[key=%s]失败", key), ex);
@@ -74,7 +74,7 @@ public class RedisUtil {
   @SuppressWarnings("all")
   public boolean delete(String key) {
     try {
-      return stringRedisTemplate.delete(key);
+      return redisTemplate.delete(key);
     } catch (Exception ex) {
       throw new RedisException(String.format("删除[key=%s]失败", key), ex);
     }
@@ -83,25 +83,25 @@ public class RedisUtil {
   /**
    * 获取指定匹配模式的Key列表
    *
-   * @param keyPattern Key表达式
+   * @param pattern Key表达式
    * @return Key列表
    */
-  public List<String> scan(String keyPattern) throws Exception {
+  public List<String> scan(String pattern) {
     try {
-      Set<String> setKeys = stringRedisTemplate.execute((RedisCallback<Set<String>>) connection -> {
-        Set<String> keysTmp = new HashSet<>();
-        try (Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(keyPattern).count(SCAN_OPTION_COUNT).build())) {
+      Set<String> keySet = redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+        Set<String> keySetTmp = new HashSet<>();
+        try (Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(pattern).count(SCAN_OPTION_COUNT).build())) {
           while (cursor.hasNext()) {
-            keysTmp.add(new String(cursor.next(), StandardCharsets.UTF_8));
+            keySetTmp.add(new String(cursor.next(), StandardCharsets.UTF_8));
           }
         } catch (Exception ex) {
           throw new RuntimeException(ex);
         }
-        return keysTmp;
+        return keySetTmp;
       });
-      return CollectionUtils.isEmpty(setKeys) ? null : new ArrayList<String>(setKeys);
+      return CollectionUtils.isEmpty(keySet) ? null : new ArrayList<>(keySet);
     } catch (Exception ex) {
-      throw new RedisException(String.format("扫描[key=%s]失败", keyPattern), ex);
+      throw new RedisException(String.format("扫描[%s]失败", pattern), ex);
     }
   }
 

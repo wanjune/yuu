@@ -38,12 +38,12 @@ public class ListUtil {
   /**
    * 对象数组转换为对象列表
    *
-   * @param a 对象数组
+   * @param array 对象数组
    * @return 对象列表
    */
   @SafeVarargs
-  public static <T> List<T> asList(final T... a) {
-    return a == null ? null : new ArrayList<>(Arrays.asList(a));
+  public static <T> List<T> asList(final T... array) {
+    return array == null ? null : new ArrayList<>(Arrays.asList(array));
   }
 
   /**
@@ -54,11 +54,9 @@ public class ListUtil {
    */
   public static List<String> asList(final String arraysString) {
     if (StringUtil.isBlank(arraysString)) return null;
-
-    String reArraysString = StringUtil.trimFirstAndLastChar(arraysString, CstUtil.BRACKET);
-    reArraysString = reArraysString.replaceAll(CstUtil.COMMA + StringUtil.SPACE, CstUtil.COMMA);
-    reArraysString = reArraysString.replaceAll(CstUtil.DOUBLE_QUOTE, StringUtil.EMPTY);
-
+    String reArraysString = StringUtil.trimFirstAndLastChar(arraysString, CstUtil.BRACKET)
+        .replaceAll(CstUtil.COMMA + StringUtil.SPACE, CstUtil.COMMA)
+        .replaceAll(CstUtil.DOUBLE_QUOTE, StringUtil.EMPTY);
     return StringUtil.isBlank(reArraysString) ? null : new ArrayList<>((Arrays.asList(reArraysString.split(CstUtil.COMMA))));
   }
 
@@ -131,7 +129,6 @@ public class ListUtil {
    */
   public static <T> List<List<T>> partition(final List<T> list, int len) {
     if (ListUtil.notEmpty(list) && len < 1) return null;
-
     int limit = (list.size() + len - 1) / len;
     return Stream.iterate(0, n -> n + 1).limit(limit).parallel().map(a -> list.stream().skip((long) a * len).limit(len).parallel().collect(Collectors.toList())).collect(Collectors.toList());
   }

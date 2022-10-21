@@ -161,7 +161,6 @@ public class SftpUtil {
     } catch (Exception ex) {
       throw new SftpException(String.format("SFTP连接失败[主机:%s,端口:%s,用户:%s,秘钥:%s]", host, StringUtil.isBlank(port) ? SFTP_DEFAULT_PORT : port, username, password), ex);
     }
-
   }
 
   /**

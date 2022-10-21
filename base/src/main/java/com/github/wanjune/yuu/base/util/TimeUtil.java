@@ -1,5 +1,7 @@
 package com.github.wanjune.yuu.base.util;
 
+import com.github.wanjune.yuu.base.exception.YuuException;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -104,7 +106,7 @@ public class TimeUtil {
   }
 
   /**
-   * 转换为是日时对象
+   * 转换为日时对象
    *
    * @param dateTimeString 日时字符串
    * @param format         日时格式
@@ -122,13 +124,12 @@ public class TimeUtil {
       }
       return LocalDateTime.parse(dateTimeString, formatter);
     } catch (Exception ex) {
-      // Nothing
+      throw new YuuException(String.format("[%s]转换为日时对象失败", dateTimeString), ex);
     }
-    return null;
   }
 
   /**
-   * 转换为是日时对象
+   * 转换是日时对象
    * <p>尝试使用FMT_DT_LIST列表中格式转换</p>
    *
    * @param dateTimeString 日时字符串
@@ -139,16 +140,18 @@ public class TimeUtil {
     for (String format : FMT_DT_LIST) {
       try {
         dateTime = parseDateTime(dateTimeString, format);
-        if (dateTime != null) break;
+        break;
       } catch (Exception ex) {
         // NOTHING
       }
     }
-    return dateTime;
+
+    if (dateTime != null) return dateTime;
+    throw new YuuException(String.format("[%s]转换为日时对象失败", dateTimeString));
   }
 
   /**
-   * 将Timestamp转换为日时对象
+   * 转换为日时对象
    *
    * @param timeStampMillis Timestamp毫秒
    * @return 日时对象
@@ -157,38 +160,47 @@ public class TimeUtil {
     try {
       return LocalDateTime.ofInstant(Instant.ofEpochMilli(timeStampMillis), ZoneId.systemDefault());
     } catch (Exception ex) {
-      return null;
+      throw new YuuException(String.format("[%s]转换为日时对象失败", timeStampMillis));
     }
   }
 
   /**
-   * 根据日时输出指定格式的字符串
+   * 取得指定日时格式的字符串
    *
    * @param dateTime 指定日时
    * @param format   日时格式
-   * @return 指定格式的日时字符串
+   * @return 指定日时格式的字符串
    */
   public static String formatDateTime(final LocalDateTime dateTime, final String format) {
-    DateTimeFormatter formatter;
-    if (format.endsWith(".SSS")) {
-      formatter = new DateTimeFormatterBuilder().appendPattern(format.replace(".SSS", StringUtil.EMPTY)).appendLiteral(".").appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
-    } else if (format.endsWith("SSS")) {
-      formatter = new DateTimeFormatterBuilder().appendPattern(format.replace("SSS", StringUtil.EMPTY)).appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
-    } else {
-      formatter = DateTimeFormatter.ofPattern(format);
+    try {
+      DateTimeFormatter formatter;
+      if (format.endsWith(".SSS")) {
+        formatter = new DateTimeFormatterBuilder().appendPattern(format.replace(".SSS", StringUtil.EMPTY)).appendLiteral(".").appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
+      } else if (format.endsWith("SSS")) {
+        formatter = new DateTimeFormatterBuilder().appendPattern(format.replace("SSS", StringUtil.EMPTY)).appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
+      } else {
+        formatter = DateTimeFormatter.ofPattern(format);
+      }
+      return dateTime.format(formatter);
+    } catch (Exception ex) {
+      throw new YuuException(String.format("取得[%s]指定日时格式[%s]的字符串失败", dateTime, format));
     }
-    return dateTime.format(formatter);
   }
 
   /**
-   * 是合法的日时
+   * 是否是合法的日时
    *
    * @param dateTimeString 日时字符串
    * @param format         日时格式
    * @return 验证结果
    */
   public static boolean isDateTime(final String dateTimeString, final String format) {
-    return parseDateTime(dateTimeString, format) != null;
+    try {
+      parseDateTime(dateTimeString, format);
+      return true;
+    } catch (Exception ex) {
+      return false;
+    }
   }
 
   /**
@@ -221,9 +233,8 @@ public class TimeUtil {
     try {
       return LocalDate.parse(dateString, DateTimeFormatter.ofPattern(format));
     } catch (Exception ex) {
-      // Nothing
+      throw new YuuException(String.format("[%s]转换为日期对象", dateString));
     }
-    return null;
   }
 
   /**
@@ -238,25 +249,29 @@ public class TimeUtil {
     for (String format : FMT_D_LIST) {
       try {
         date = parseDate(dateString, format);
-        if (date != null) {
-          break;
-        }
+        break;
       } catch (Exception ex) {
         // NOTHING
       }
     }
-    return date;
+
+    if (date != null) return date;
+    throw new YuuException(String.format("[%s]转换为日期对象失败", dateString));
   }
 
   /**
-   * 根据日期输出指定格式的字符串
+   * 取得指定日期格式的字符串
    *
    * @param date   指定日期
    * @param format 日期格式
    * @return 指定格式的日期字符串
    */
   public static String formatDate(final LocalDate date, final String format) {
-    return date.format(DateTimeFormatter.ofPattern(format));
+    try {
+      return date.format(DateTimeFormatter.ofPattern(format));
+    } catch (Exception ex) {
+      throw new YuuException(String.format("取得[%s]指定日期格式[%s]的字符串失败", date, format));
+    }
   }
 
   /**
@@ -267,13 +282,18 @@ public class TimeUtil {
    * @return 验证结果
    */
   public static boolean isDate(final String dateString, final String format) {
-    return parseDate(dateString, format) != null;
+    try {
+      parseDate(dateString, format);
+      return true;
+    } catch (Exception ex) {
+      return false;
+    }
   }
 
   /**
    * 获取季度格式化字符串
    * <p>
-   * "tt" -- 2019Q1
+   * "tt" (非法) -- 2019Q1
    * "" -- 2019Q1
    * null -- 2019Q1
    * "yyyyQR" -- 2019Q1
@@ -298,21 +318,12 @@ public class TimeUtil {
   public static String getQuarterFormat(final LocalDate date, final String qrFormat) {
     // 日期为空 -> null
     if (date == null) return StringUtil.EMPTY;
-    // 非法季度格式
+    // 非法季度格式 -> 标准格式
     String reQrFormat = StringUtil.notEmpty(qrFormat) && StringUtil.isContains(qrFormat, ListUtil.asList("yyyy", "qr"), true) ? qrFormat : FMT_QR_STD;
 
     // 计算季度
     int month = date.getMonthValue();
-    String quarter;
-    if (month < 4) {
-      quarter = "1";
-    } else if (month < 7) {
-      quarter = "2";
-    } else if (month < 10) {
-      quarter = "3";
-    } else {
-      quarter = "4";
-    }
+    String quarter = month < 4 ? "1" : (month < 7 ? "2" : (month < 10 ? "3" : "4"));
 
     return reQrFormat.replace("yyyy", String.valueOf(date.getYear())).replace("QR", "Q".concat(quarter)).replace("qr", quarter);
   }

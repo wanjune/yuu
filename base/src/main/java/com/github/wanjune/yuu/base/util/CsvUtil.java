@@ -39,33 +39,33 @@ public class CsvUtil {
    * 数据存储至CSV
    * <p>CSV文件已存在 -> 追加;CSV文件不存在 -> 创建</p>
    *
-   * @param strCsvFilePath    CSV文件存储路径
+   * @param csvFilePath       CSV文件存储路径
    * @param csvHeaderList     CSV列名列表
-   * @param csvDataList       CSV数据列表
-   * @param unicodeColumnList 需要清理Unicode的列([moji文字]等,无需要设null)
+   * @param dataList          数据列表
+   * @param unicodeColumnList 需要清理Unicode列的列表([moji文字]等;null->不清理)
    */
-  public static void data2Csv(final String strCsvFilePath,
+  public static void data2Csv(final String csvFilePath,
                               final List<String> csvHeaderList,
-                              final List<Map<String, Object>> csvDataList,
+                              final List<Map<String, Object>> dataList,
                               final List<String> unicodeColumnList) {
     // CSV文件
-    File csvFile = FileUtil.create(strCsvFilePath);
+    File csvFile = FileUtil.create(csvFilePath);
     boolean isCsvExists = csvFile.exists();
 
     try {
       // CSV对象
       CsvSchema.Builder csvSchemaBuilder = CsvSchema.builder().addColumns(csvHeaderList, CsvSchema.ColumnType.STRING);
-      CsvSchema csvSchema = csvSchemaBuilder.build().withoutQuoteChar().withUseHeader(!csvFile.exists())
+      CsvSchema csvSchema = csvSchemaBuilder.build().withoutQuoteChar().withUseHeader(!isCsvExists)
           .withLineSeparator(LINE_SEPARATOR).withColumnSeparator(COLUMN_SEPARATOR).withArrayElementSeparator(ELEMENT_SEPARATOR);
 
       // 保存数据到文件中
       CsvMapper csvMapper = new CsvMapper().configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, false);
       csvMapper.writerFor(new TypeReference<List<Map<String, String>>>() {
-      }).with(csvSchema).writeValue(new FileOutputStream(csvFile, csvFile.exists()), getCsvDataList(csvDataList, csvHeaderList, unicodeColumnList));
+      }).with(csvSchema).writeValue(new FileOutputStream(csvFile, isCsvExists), getCsvDataList(dataList, csvHeaderList, unicodeColumnList));
 
-      log.info(String.format("数据存储至CSV(%s)[%s]成功", !isCsvExists ? "创建" : "追加", strCsvFilePath));
+      log.info(String.format("数据存储至CSV(%s)[%s]成功", !isCsvExists ? "创建" : "追加", csvFilePath));
     } catch (Exception ex) {
-      throw new YuuException(String.format("数据存储至CSV[%s]失败", strCsvFilePath), ex);
+      throw new YuuException(String.format("数据存储至CSV[%s]失败", csvFilePath), ex);
     }
   }
 
@@ -79,9 +79,9 @@ public class CsvUtil {
    * @param headRowNo         EXCEL的标题行号(标题行之后,开始读取数据)
    * @param cellAutoTrim      EXCEL的单元格数据是否去除前后空格
    * @param batchRowCnt       EXCEL读取时每批量处理数据行数(影响系统资源-内存)
-   * @param csvFilePath       CSV文件路径
-   * @param csvHeaderList     CSV文件头
-   * @param unicodeColumnList 需要清理Unicode的列([moji文字]等,无需要设null)
+   * @param csvFilePath       CSV文件存储路径
+   * @param csvHeaderList     CSV列名列表
+   * @param unicodeColumnList 需要清理Unicode列的列表([moji文字]等;null->不清理)
    */
   public static void excel2Csv(final String filePath,
                                final Integer sheetNo,
@@ -140,19 +140,19 @@ public class CsvUtil {
   /**
    * 获取CSV的存储数据列表
    *
-   * @param csvDataList       Json对象数据列表
-   * @param csvHeaderList     转换的CSV表头列表
-   * @param unicodeColumnList 需要清理Unicode的列([moji文字]等,无需要设null)
+   * @param dataList          数据列表
+   * @param csvHeaderList     CSV列名列表
+   * @param unicodeColumnList 需要清理Unicode列的列表([moji文字]等;null->不清理)
    * @return CSV的存储数据列表
    * @throws Exception Exception
    */
-  private static List<Map<String, String>> getCsvDataList(final List<Map<String, Object>> csvDataList,
+  private static List<Map<String, String>> getCsvDataList(final List<Map<String, Object>> dataList,
                                                           final List<String> csvHeaderList,
                                                           final List<String> unicodeColumnList) throws Exception {
     List<Map<String, String>> reCsvDataList = null;
-    if (ListUtil.notEmpty(csvDataList) && ListUtil.notEmpty(csvHeaderList)) {
-      reCsvDataList = new ArrayList<>(csvDataList.size());
-      for (Map<String, Object> csvDataItem : csvDataList) {
+    if (ListUtil.notEmpty(dataList) && ListUtil.notEmpty(csvHeaderList)) {
+      reCsvDataList = new ArrayList<>(dataList.size());
+      for (Map<String, Object> csvDataItem : dataList) {
         reCsvDataList.add(getCsvData(csvDataItem, csvHeaderList, unicodeColumnList));
       }
     }
@@ -162,21 +162,21 @@ public class CsvUtil {
   /**
    * 获取CSV的存储数据
    *
-   * @param csvData           Json对象数据
-   * @param csvHeaderList     转换的CSV表头
-   * @param unicodeColumnList 需要清理Unicode的列([moji文字]等,无需要设null)
+   * @param data              数据
+   * @param csvHeaderList     CSV列名列表
+   * @param unicodeColumnList 需要清理Unicode列的列表([moji文字]等;null->不清理)
    * @return CSV的存储数据
    * @throws Exception Exception
    */
-  private static Map<String, String> getCsvData(final Map<String, Object> csvData,
+  private static Map<String, String> getCsvData(final Map<String, Object> data,
                                                 final List<String> csvHeaderList,
                                                 final List<String> unicodeColumnList) throws Exception {
     Map<String, String> reCsvData = new HashMap<>(csvHeaderList.size());
     for (String key : csvHeaderList) {
-      if (StringUtil.isContains(key, unicodeColumnList, true) && csvData.get(key) != null) {
-        reCsvData.put(key, JsonUtil.writeValueAsString(StringUtil.cleanUnicode(csvData.get(key).toString())));
-      } else if (csvData.get(key) != null) {
-        reCsvData.put(key, JsonUtil.writeValueAsString(csvData.get(key)));
+      if (StringUtil.isContains(key, unicodeColumnList, true) && data.get(key) != null) {
+        reCsvData.put(key, JsonUtil.writeValueAsString(StringUtil.cleanUnicode(data.get(key).toString())));
+      } else if (data.get(key) != null) {
+        reCsvData.put(key, JsonUtil.writeValueAsString(data.get(key)));
       } else {
         reCsvData.put(key, StringUtil.EMPTY);
       }

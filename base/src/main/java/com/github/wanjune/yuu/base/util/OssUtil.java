@@ -292,11 +292,7 @@ public class OssUtil {
    */
   @PreDestroy
   public void close() {
-    try {
-      if (ossClient != null) ossClient.shutdown();
-    } catch (Exception ex) {
-      log.error("关闭OSS客户端,发生异常!", ex);
-    }
+    if (ossClient != null) ossClient.shutdown();
   }
 
 }
