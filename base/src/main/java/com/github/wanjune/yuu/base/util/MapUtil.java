@@ -31,7 +31,7 @@ public class MapUtil {
    * @param <V> 值的类型
    * @return true:null或数据为空 / false:不为空且有数据
    */
-  public static <K, V> boolean nonEmpty(final Map<K, V> map) {
+  public static <K, V> boolean notEmpty(final Map<K, V> map) {
     return !isEmpty(map);
   }
 

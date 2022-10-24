@@ -223,8 +223,6 @@ public class FileUtil {
         if (isNewLine && i != filePathList.size() - 1) outputStream.write(LINE_SEPARATOR);
         // 关闭输入的文件流
         inputStream.close();
-        // 关闭输出的文件流
-        if (i != filePathList.size() - 1) outputStream.close();
 
         log.info(String.format("已合并源文件:[%s] -> 目标文件[%s]中!", filePathList.get(i), combineFilePath));
       }

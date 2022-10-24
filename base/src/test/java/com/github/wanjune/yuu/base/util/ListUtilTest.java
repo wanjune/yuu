@@ -13,9 +13,9 @@ class ListUtilTest {
 
   @Test
   void size() {
-    Assertions.assertEquals(ListUtil.size(null), 0);
-    Assertions.assertEquals(ListUtil.size(new ArrayList<String>()), 0);
-    Assertions.assertEquals(ListUtil.size(ListUtil.asList("1", "2")), 2);
+    Assertions.assertEquals(0, ListUtil.size(null));
+    Assertions.assertEquals(0, ListUtil.size(new ArrayList<String>()));
+    Assertions.assertEquals(2, ListUtil.size(ListUtil.asList("1", "2")));
   }
 
   @Test
@@ -34,7 +34,7 @@ class ListUtilTest {
   @Test
   void asList() {
     ListUtil.asList(new MessageModel(1101, "测试消息01"), new MessageModel(1102, "测试消息02")).forEach(e -> {
-      Assertions.assertEquals(e.getMessage(), e.getCode() == 1101 ? "测试消息01" : "测试消息02");
+      Assertions.assertEquals(e.getCode() == 1101 ? "测试消息01" : "测试消息02", e.getMessage());
     });
   }
 
@@ -44,13 +44,13 @@ class ListUtilTest {
     list1.forEach(e -> {
       log.info(String.format("索引[%s] -> \t[%s]", list1.indexOf(e), e));
     });
-    Assertions.assertEquals(list1.size(), 6);
+    Assertions.assertEquals(6, list1.size());
 
     List<String> list2 = ListUtil.asList("5,7,  8,4,1,3, 2 ");
     list2.forEach(e -> {
       log.info(String.format("索引[%s] -> \t[%s]", list2.indexOf(e), e));
     });
-    Assertions.assertEquals(list2.size(), 7);
+    Assertions.assertEquals(7, list2.size());
   }
 
   @Test
@@ -61,7 +61,7 @@ class ListUtilTest {
   }
 
   @Test
-  void nonEmpty() {
+  void notEmpty() {
     Assertions.assertFalse(ListUtil.notEmpty(null));
     Assertions.assertFalse(ListUtil.notEmpty(new ArrayList<>()));
     Assertions.assertTrue(ListUtil.notEmpty(ListUtil.asList("1", "a")));
@@ -69,8 +69,8 @@ class ListUtilTest {
 
   @Test
   void getSingleton() {
-    Assertions.assertEquals(ListUtil.getSingleton(ListUtil.asList("测试001")), "测试001");
-    Assertions.assertEquals(ListUtil.getSingleton(ListUtil.asList("测试001", "测试001")), ListUtil.asList("测试001", "测试001"));
+    Assertions.assertEquals("测试001", ListUtil.getSingleton(ListUtil.asList("测试001")));
+    Assertions.assertEquals(ListUtil.asList("测试001", "测试002"), ListUtil.getSingleton(ListUtil.asList("测试001", "测试002")));
   }
 
   @Test
@@ -78,31 +78,24 @@ class ListUtilTest {
     List<Integer> list1 = ListUtil.asList(5, 7, 8, 4, 1, 3);
     ListUtil.sort(list1);
 
-    Assertions.assertEquals(list1.get(0).intValue(), 1);
-    Assertions.assertEquals(list1.get(5).intValue(), 8);
+    Assertions.assertEquals(1, list1.get(0).intValue());
+    Assertions.assertEquals(8, list1.get(5).intValue());
 
     List<String> list2 = ListUtil.asList("[5, 7,8,4, 1,3 ]");
     ListUtil.sort(list2);
 
-    Assertions.assertEquals(list2.get(0), "1");
-    Assertions.assertEquals(list2.get(5), "8");
+    Assertions.assertEquals("1", list2.get(0));
+    Assertions.assertEquals("8", list2.get(5));
   }
 
   @Test
   void copy() {
-    List<Integer> list1 = ListUtil.asList(5, 7, 8, 4, 1, 3);
-    List<Integer> list2 = new ArrayList<>();
-    ListUtil.copy(list2, list1);
-
-    Assertions.assertEquals(list1.get(0).intValue(), 5);
-    Assertions.assertEquals(list1.get(5).intValue(), 3);
-
     List<MessageModel> list3 = ListUtil.asList(new MessageModel(1101, "测试消息01"), new MessageModel(1102, "测试消息02"));
     List<MessageModel> list4 = new ArrayList<>();
     ListUtil.copy(list4, list3);
 
-    Assertions.assertEquals(list4.get(0).getCode(), 1101);
-    Assertions.assertEquals(list4.get(1).getMessage(), "测试消息02");
+    Assertions.assertEquals(1101, list4.get(0).getCode());
+    Assertions.assertEquals("测试消息02", list4.get(1).getMessage());
   }
 
   @Test
@@ -113,7 +106,7 @@ class ListUtilTest {
     }
 
     List<List<MessageModel>> listp1 = ListUtil.partition(list0, 20);
-    Assertions.assertEquals(listp1.get(4).size(), 20);
-    Assertions.assertEquals(listp1.get(4).get(19).getMessage(), "测试消息200");
+    Assertions.assertEquals(20, listp1.get(4).size());
+    Assertions.assertEquals("测试消息200", listp1.get(4).get(19).getMessage());
   }
 }

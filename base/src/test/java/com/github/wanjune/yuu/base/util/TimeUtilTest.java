@@ -24,55 +24,55 @@ class TimeUtilTest {
   }
 
   @Test
-  void getDateTimeNowFormat() {
-    log.info(TimeUtil.FMT_DT_FULL_STD + " -> " + TimeUtil.getDateTimeNowFormat(TimeUtil.FMT_DT_FULL_STD));
-    Assertions.assertTrue(TimeUtil.isDateTime(TimeUtil.getDateTimeNowFormat(TimeUtil.FMT_DT_FULL_STD), TimeUtil.FMT_DT_FULL_STD));
-    log.info(TimeUtil.FMT_DT_FULL_SIMPLE + " -> " + TimeUtil.getDateTimeNowFormat(TimeUtil.FMT_DT_FULL_SIMPLE));
-    Assertions.assertTrue(TimeUtil.isDateTime(TimeUtil.getDateTimeNowFormat(TimeUtil.FMT_DT_FULL_SIMPLE), TimeUtil.FMT_DT_FULL_SIMPLE));
-    log.info(TimeUtil.FMT_DT_STD + " -> " + TimeUtil.getDateTimeNowFormat(TimeUtil.FMT_DT_STD));
-    Assertions.assertTrue(TimeUtil.isDateTime(TimeUtil.getDateTimeNowFormat(TimeUtil.FMT_DT_STD), TimeUtil.FMT_DT_STD));
-    log.info(TimeUtil.FMT_DT_SIMPLE + " -> " + TimeUtil.getDateTimeNowFormat(TimeUtil.FMT_DT_SIMPLE));
-    Assertions.assertTrue(TimeUtil.isDateTime(TimeUtil.getDateTimeNowFormat(TimeUtil.FMT_DT_SIMPLE), TimeUtil.FMT_DT_SIMPLE));
+  void getNowDateTimeFormat() {
+    log.info(TimeUtil.FMT_DT_FULL_STD + " -> " + TimeUtil.getNowDateTimeFormat(TimeUtil.FMT_DT_FULL_STD));
+    Assertions.assertTrue(TimeUtil.isDateTime(TimeUtil.getNowDateTimeFormat(TimeUtil.FMT_DT_FULL_STD), TimeUtil.FMT_DT_FULL_STD));
+    log.info(TimeUtil.FMT_DT_FULL_SIMPLE + " -> " + TimeUtil.getNowDateTimeFormat(TimeUtil.FMT_DT_FULL_SIMPLE));
+    Assertions.assertTrue(TimeUtil.isDateTime(TimeUtil.getNowDateTimeFormat(TimeUtil.FMT_DT_FULL_SIMPLE), TimeUtil.FMT_DT_FULL_SIMPLE));
+    log.info(TimeUtil.FMT_DT_STD + " -> " + TimeUtil.getNowDateTimeFormat(TimeUtil.FMT_DT_STD));
+    Assertions.assertTrue(TimeUtil.isDateTime(TimeUtil.getNowDateTimeFormat(TimeUtil.FMT_DT_STD), TimeUtil.FMT_DT_STD));
+    log.info(TimeUtil.FMT_DT_SIMPLE + " -> " + TimeUtil.getNowDateTimeFormat(TimeUtil.FMT_DT_SIMPLE));
+    Assertions.assertTrue(TimeUtil.isDateTime(TimeUtil.getNowDateTimeFormat(TimeUtil.FMT_DT_SIMPLE), TimeUtil.FMT_DT_SIMPLE));
   }
 
   @Test
-  void getDateTimeNow() throws InterruptedException {
-    LocalDateTime dtNow = TimeUtil.getDateTimeNow();
+  void getNowDateTime() throws InterruptedException {
+    LocalDateTime dtNow = TimeUtil.getNowDateTime();
     TimeUnit.SECONDS.sleep(1);
     Assertions.assertTrue(dtNow.isBefore(LocalDateTime.now()));
   }
 
   @Test
   void parseDateTime() {
-    LocalDateTime dtNow = TimeUtil.getDateTimeNow();
+    LocalDateTime dtNow = TimeUtil.getNowDateTime();
     Assertions.assertTrue(TimeUtil.parseDateTime("2022-10-12 16:17:18.222", TimeUtil.FMT_DT_FULL_STD).isBefore(dtNow));
-    Assertions.assertTrue(TimeUtil.parseDateTime("2022-10-12 17:17:18.222", TimeUtil.FMT_DT_FULL_STD).isAfter(dtNow));
+    Assertions.assertTrue(TimeUtil.parseDateTime("2023-10-12 17:17:18.222", TimeUtil.FMT_DT_FULL_STD).isAfter(dtNow));
     Assertions.assertTrue(TimeUtil.parseDateTime("20221012161718222", TimeUtil.FMT_DT_FULL_SIMPLE).isBefore(dtNow));
-    Assertions.assertTrue(TimeUtil.parseDateTime("20221012171718222", TimeUtil.FMT_DT_FULL_SIMPLE).isAfter(dtNow));
+    Assertions.assertTrue(TimeUtil.parseDateTime("20231012171718222", TimeUtil.FMT_DT_FULL_SIMPLE).isAfter(dtNow));
     Assertions.assertTrue(TimeUtil.parseDateTime("2022-10-12 16:17:18", TimeUtil.FMT_DT_STD).isBefore(dtNow));
-    Assertions.assertTrue(TimeUtil.parseDateTime("2022-10-12 17:17:18", TimeUtil.FMT_DT_STD).isAfter(dtNow));
+    Assertions.assertTrue(TimeUtil.parseDateTime("2023-10-12 17:17:18", TimeUtil.FMT_DT_STD).isAfter(dtNow));
     Assertions.assertTrue(TimeUtil.parseDateTime("20221012161718", TimeUtil.FMT_DT_SIMPLE).isBefore(dtNow));
-    Assertions.assertTrue(TimeUtil.parseDateTime("20221012171718", TimeUtil.FMT_DT_SIMPLE).isAfter(dtNow));
+    Assertions.assertTrue(TimeUtil.parseDateTime("20231012171718", TimeUtil.FMT_DT_SIMPLE).isAfter(dtNow));
   }
 
   @Test
   void parseDateTimeGuess() {
-    LocalDateTime dtNow = TimeUtil.getDateTimeNow();
+    LocalDateTime dtNow = TimeUtil.getNowDateTime();
     Assertions.assertTrue(TimeUtil.parseDateTime("2022-10-12 16:17:18.222").isBefore(dtNow));
-    Assertions.assertTrue(TimeUtil.parseDateTime("2022-10-12 17:17:18.222").isAfter(dtNow));
+    Assertions.assertTrue(TimeUtil.parseDateTime("2023-10-12 17:17:18.222").isAfter(dtNow));
     Assertions.assertTrue(TimeUtil.parseDateTime("20221012161718222").isBefore(dtNow));
-    Assertions.assertTrue(TimeUtil.parseDateTime("20221012171718222").isAfter(dtNow));
+    Assertions.assertTrue(TimeUtil.parseDateTime("20231012171718222").isAfter(dtNow));
     Assertions.assertTrue(TimeUtil.parseDateTime("2022-10-12 16:17:18").isBefore(dtNow));
-    Assertions.assertTrue(TimeUtil.parseDateTime("2022-10-12 17:17:18").isAfter(dtNow));
+    Assertions.assertTrue(TimeUtil.parseDateTime("2023-10-12 17:17:18").isAfter(dtNow));
     Assertions.assertTrue(TimeUtil.parseDateTime("20221012161718").isBefore(dtNow));
-    Assertions.assertTrue(TimeUtil.parseDateTime("20221012171718").isAfter(dtNow));
+    Assertions.assertTrue(TimeUtil.parseDateTime("20231012171718").isAfter(dtNow));
   }
 
   @Test
   void parseDateTimeTimeStampMillis() {
-    LocalDateTime dtNow = TimeUtil.getDateTimeNow();
+    LocalDateTime dtNow = TimeUtil.getNowDateTime();
     Assertions.assertTrue(TimeUtil.parseDateTime(1665562638222L).isBefore(dtNow));
-    Assertions.assertTrue(TimeUtil.parseDateTime(1665566238222L).isAfter(dtNow));
+    Assertions.assertTrue(TimeUtil.parseDateTime(1698129975000L).isAfter(dtNow));
   }
 
   @Test
@@ -93,36 +93,36 @@ class TimeUtilTest {
   }
 
   @Test
-  void getDateNowFormat() {
-    log.info(TimeUtil.FMT_D_STD + " -> " + TimeUtil.getDateNowFormat(TimeUtil.FMT_D_STD));
-    Assertions.assertTrue(TimeUtil.isDate(TimeUtil.getDateNowFormat(TimeUtil.FMT_D_STD), TimeUtil.FMT_D_STD));
-    log.info(TimeUtil.FMT_D_SIMPLE + " -> " + TimeUtil.getDateNowFormat(TimeUtil.FMT_D_SIMPLE));
-    Assertions.assertTrue(TimeUtil.isDate(TimeUtil.getDateNowFormat(TimeUtil.FMT_D_SIMPLE), TimeUtil.FMT_D_SIMPLE));
+  void getNowDateFormat() {
+    log.info(TimeUtil.FMT_D_STD + " -> " + TimeUtil.getNowDateFormat(TimeUtil.FMT_D_STD));
+    Assertions.assertTrue(TimeUtil.isDate(TimeUtil.getNowDateFormat(TimeUtil.FMT_D_STD), TimeUtil.FMT_D_STD));
+    log.info(TimeUtil.FMT_D_SIMPLE + " -> " + TimeUtil.getNowDateFormat(TimeUtil.FMT_D_SIMPLE));
+    Assertions.assertTrue(TimeUtil.isDate(TimeUtil.getNowDateFormat(TimeUtil.FMT_D_SIMPLE), TimeUtil.FMT_D_SIMPLE));
   }
 
   @Test
-  void getDateNow() {
-    Assertions.assertTrue(TimeUtil.getDateNow().isBefore(LocalDate.now().plusDays(1L)));
-    Assertions.assertTrue(TimeUtil.getDateNow().isAfter(LocalDate.now().plusDays(-1L)));
+  void getNowDate() {
+    Assertions.assertTrue(TimeUtil.getNowDate().isBefore(LocalDate.now().plusDays(1L)));
+    Assertions.assertTrue(TimeUtil.getNowDate().isAfter(LocalDate.now().plusDays(-1L)));
   }
 
   @Test
   void parseDate() {
     LocalDate dateNow = LocalDate.now();
     Assertions.assertTrue(TimeUtil.parseDate("2022-10-11", TimeUtil.FMT_D_STD).compareTo(dateNow) < 0);
-    Assertions.assertEquals(0, TimeUtil.parseDate("20221012", TimeUtil.FMT_D_SIMPLE).compareTo(dateNow));
-    Assertions.assertTrue(TimeUtil.parseDate("2022/10/13", "yyyy/MM/dd").compareTo(dateNow) > 0);
+    Assertions.assertEquals(0, TimeUtil.parseDate("20221024", TimeUtil.FMT_D_SIMPLE).compareTo(dateNow));
+    Assertions.assertTrue(TimeUtil.parseDate("2023/10/13", "yyyy/MM/dd").compareTo(dateNow) > 0);
   }
 
   @Test
   void parseDateGuess() {
     LocalDate dateNow = LocalDate.now();
     Assertions.assertTrue(TimeUtil.parseDate("2022-10-11").compareTo(dateNow) < 0);
-    Assertions.assertEquals(0, TimeUtil.parseDate("20221012").compareTo(dateNow));
-    Assertions.assertTrue(TimeUtil.parseDate("2022/10/13").compareTo(dateNow) > 0);
-    Assertions.assertEquals(0, TimeUtil.parseDate("2022年10月12日").compareTo(dateNow));
-    Assertions.assertEquals(0, TimeUtil.parseDate("12/10/2022").compareTo(dateNow));
-    Assertions.assertEquals(0, TimeUtil.parseDate("10-12-2022").compareTo(dateNow));
+    Assertions.assertEquals(0, TimeUtil.parseDate("20221024").compareTo(dateNow));
+    Assertions.assertTrue(TimeUtil.parseDate("2023/10/13").compareTo(dateNow) > 0);
+    Assertions.assertEquals(0, TimeUtil.parseDate("2022年10月24日").compareTo(dateNow));
+    Assertions.assertEquals(0, TimeUtil.parseDate("24/10/2022").compareTo(dateNow));
+    Assertions.assertEquals(0, TimeUtil.parseDate("10-24-2022").compareTo(dateNow));
   }
 
   @Test

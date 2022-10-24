@@ -67,7 +67,7 @@ public class OkHttpUtil {
       Request.Builder reqBuilder = new Request.Builder();
 
       // URL处理
-      if (MapUtil.nonEmpty(params)) {
+      if (MapUtil.notEmpty(params)) {
         boolean isFirst = true;
         for (Map.Entry<String, Object> entry : params.entrySet()) {
           sbUrlFull.append(isFirst ? "?" : "&").append(entry.getKey()).append("=").append(entry.getValue());
@@ -76,7 +76,7 @@ public class OkHttpUtil {
       }
 
       // Header
-      if (MapUtil.nonEmpty(headers)) {
+      if (MapUtil.notEmpty(headers)) {
         for (Map.Entry<String, String> entry : headers.entrySet()) {
           reqBuilder.addHeader(entry.getKey(), entry.getValue());
         }
@@ -96,17 +96,15 @@ public class OkHttpUtil {
       }
 
       // 请求数据详情日志
-      if (isPrintLog) {
-        log.info(String.format("[%s]外部接口请求详情\n[url]:\t%s\n[method]:\t%s\n[headers]:\t%s\n[body]:\t%s\n[响应body]:\t%s",
-            "execute", sbUrlFull.toString(), method, headers, body, strResBody));
-      }
+      if (isPrintLog)
+        log.info(String.format("[%s]外部接口请求详情\n[url]:\t%s\n[method]:\t%s\n[headers]:\t%s\n[body]:\t%s\n[响应body]:\t%s", "execute", sbUrlFull.toString(), method, headers, body, strResBody));
 
       return strResBody;
     } catch (Exception ex) {
-      log.error(String.format("[%s]外部接口请求发生异常!\n[url]:\t%s\n[method]:\t%s\n[headers]:\t%s\n[body]:\t%s\n[响应body]:\t%s",
-          "execute", sbUrlFull.toString(), method, headers, body, strResBody), ex);
-      throw new OkHttpException(String.format("外部接口请求失败[url:%s,method:%s,headers:%s,body:%s,响应body:%s]",
-          sbUrlFull.toString(), method, headers, body, strResBody), ex);
+      if (isPrintLog)
+        log.error(String.format("[%s]外部接口请求发生异常!\n[url]:\t%s\n[method]:\t%s\n[headers]:\t%s\n[body]:\t%s\n[响应body]:\t%s", "execute", sbUrlFull.toString(), method, headers, body, strResBody), ex);
+
+      throw new OkHttpException(String.format("外部接口请求失败[url:%s,method:%s,headers:%s,body:%s,响应body:%s]", sbUrlFull.toString(), method, headers, body, strResBody), ex);
     }
 
   }

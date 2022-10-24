@@ -10,23 +10,9 @@ import java.util.ArrayList;
 class StringUtilTest {
 
   @Test
-  void length() {
-    Assertions.assertEquals(StringUtil.length(null), 0);
-    Assertions.assertEquals(StringUtil.length(""), 0);
-    Assertions.assertEquals(StringUtil.length("abc"), 3);
-  }
-
-  @Test
-  void force() {
-    Assertions.assertEquals(StringUtil.force(null), "");
-    Assertions.assertEquals(StringUtil.force(""), "");
-    Assertions.assertEquals(StringUtil.force("abc"), "abc");
-  }
-
-  @Test
   void instance() {
-    Assertions.assertEquals(StringUtil.instance("abc{test}efg", MapUtil.of("test", "测试1")), "abc测试1efg");
-    Assertions.assertEquals(StringUtil.instance("abc{test1}e{test2}f{test1}g", MapUtil.of("test1", "测试1", "test2", "测试2")), "abc测试1e测试2f测试1g");
+    Assertions.assertEquals("abc测试1efg", StringUtil.instance("abc{test}efg", MapUtil.of("test", "测试1")));
+    Assertions.assertEquals("abc测试1e测试2f测试1g", StringUtil.instance("abc{test1}e{test2}f{test1}g", MapUtil.of("test1", "测试1", "test2", "测试2")));
   }
 
   @Test
@@ -42,27 +28,43 @@ class StringUtilTest {
 
   @Test
   void trimFirstAndLastChar() {
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("'测试数据'", "'"), "测试数据");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("\"测试数据\"", "\""), "测试数据");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("{测试数据}", "{}"), "测试数据");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("[测试数据]", "[]"), "测试数据");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("【测试数据】", "【】"), "测试数据");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("「测试数据」", "「」"), "测试数据");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("''测试数据''", "'"), "'测试数据'");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("\"\"测试数据\"\"", "\""), "\"测试数据\"");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("{{测试数据}}", "{}"), "{测试数据}");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("[[测试数据]]", "[]"), "[测试数据]");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("【【测试数据】】", "【】"), "【测试数据】");
-    Assertions.assertEquals(StringUtil.trimFirstAndLastChar("「「测试数据」」", "「」"), "「测试数据」");
+    Assertions.assertEquals("测试数据", StringUtil.trimFirstAndLastChar("'测试数据'", "'"));
+    Assertions.assertEquals("测试数据", StringUtil.trimFirstAndLastChar("\"测试数据\"", "\""));
+    Assertions.assertEquals("测试数据", StringUtil.trimFirstAndLastChar("{测试数据}", "{}"));
+    Assertions.assertEquals("测试数据", StringUtil.trimFirstAndLastChar("[测试数据]", "[]"));
+    Assertions.assertEquals("测试数据", StringUtil.trimFirstAndLastChar("【测试数据】", "【】"));
+    Assertions.assertEquals("测试数据", StringUtil.trimFirstAndLastChar("「测试数据」", "「」"));
+    Assertions.assertEquals("'测试数据'", StringUtil.trimFirstAndLastChar("''测试数据''", "'"));
+    Assertions.assertEquals("\"测试数据\"", StringUtil.trimFirstAndLastChar("\"\"测试数据\"\"", "\""));
+    Assertions.assertEquals("{测试数据}", StringUtil.trimFirstAndLastChar("{{测试数据}}", "{}"));
+    Assertions.assertEquals("[测试数据]", StringUtil.trimFirstAndLastChar("[[测试数据]]", "[]"));
+    Assertions.assertEquals("【测试数据】", StringUtil.trimFirstAndLastChar("【【测试数据】】", "【】"));
+    Assertions.assertEquals("「测试数据」", StringUtil.trimFirstAndLastChar("「「测试数据」」", "「」"));
+  }
+
+  @Test
+  void removeStart() {
+    String str = "A template for executing high-level operations. When used with a";
+    Assertions.assertEquals(str, StringUtil.removeStart(str, null));
+    Assertions.assertEquals(" template for executing high-level operations. When used with a", StringUtil.removeStart(str, "A"));
+    Assertions.assertEquals("for executing high-level operations. When used with a", StringUtil.removeStart(str, "A template "));
+  }
+
+  @Test
+  void removeEnd() {
+    String str = "A template for executing high-level operations. When used with a";
+    Assertions.assertEquals(str, StringUtil.removeEnd(str, null));
+    Assertions.assertEquals("A template for executing high-level operations. When used with ", StringUtil.removeEnd(str, "a"));
+    Assertions.assertEquals("A template for executing high-level operations. W", StringUtil.removeEnd(str, "hen used with a"));
   }
 
   @Test
   void toFullwidth() {
     Assertions.assertNull(StringUtil.toFullwidth(null));
     Assertions.assertEquals(StringUtil.toFullwidth(""), "");
-    Assertions.assertEquals(StringUtil.toFullwidth("13123456789"), "１３１２３４５６７８９");
-    Assertions.assertEquals(StringUtil.toFullwidth("1３123４56789"), "１３１２３４５６７８９");
-    Assertions.assertEquals(StringUtil.toFullwidth("1３1 23４ 5A　6 b7ｃ8　9"), "１３１　２３４　５Ａ　６　ｂ７ｃ８　９");
+    Assertions.assertEquals("１３１２３４５６７８９", StringUtil.toFullwidth("13123456789"));
+    Assertions.assertEquals("１３１２３４５６７８９", StringUtil.toFullwidth("1３123４56789"));
+    Assertions.assertEquals("１３１　２３４　５Ａ　６　ｂ７ｃ８　９", StringUtil.toFullwidth("1３1 23４ 5A　6 b7ｃ8　9"));
   }
 
   @Test
@@ -79,9 +81,9 @@ class StringUtilTest {
     Assertions.assertNull(StringUtil.cleanUnicode(null));
     Assertions.assertNull(StringUtil.cleanUnicode("null"));
     Assertions.assertNull(StringUtil.cleanUnicode("NULL"));
-    Assertions.assertEquals(StringUtil.cleanUnicode(""), "");
-    Assertions.assertEquals(StringUtil.cleanUnicode("测试1\uD83D\uDE09"), "测试1");
-    Assertions.assertEquals(StringUtil.cleanUnicode("测试2\uD83D\uDE03"), "测试2");
+    Assertions.assertEquals("", StringUtil.cleanUnicode(""));
+    Assertions.assertEquals("测试1", StringUtil.cleanUnicode("\uD83D\uDE00测\uD83D\uDE02试\uD83E\uDEF31"));
+    Assertions.assertEquals("测试2", StringUtil.cleanUnicode("测\uD83D\uDE00试\uD83D\uDE022\uD83E\uDEF3"));
   }
 
   @Test
@@ -89,42 +91,61 @@ class StringUtilTest {
     Assertions.assertNull(StringUtil.cleanControl(null));
     Assertions.assertNull(StringUtil.cleanControl("null"));
     Assertions.assertNull(StringUtil.cleanControl("NULL"));
-    Assertions.assertEquals(StringUtil.cleanControl(""), "");
-    Assertions.assertEquals(StringUtil.cleanControl("测试1\001"), "测试1");
-    Assertions.assertEquals(StringUtil.cleanControl("测\002试\0032"), "测试2");
+    Assertions.assertEquals("", StringUtil.cleanControl(""));
+    Assertions.assertEquals("测试1", StringUtil.cleanControl("测试1\001"));
+    Assertions.assertEquals("测试2", StringUtil.cleanControl("测\002试\0032"));
   }
 
   @Test
   void cleanText() {
     Assertions.assertNull(StringUtil.cleanText(null));
+    Assertions.assertNull(StringUtil.cleanText("nULl"));
     Assertions.assertNull(StringUtil.cleanText("null"));
     Assertions.assertNull(StringUtil.cleanText("NULL"));
-    Assertions.assertEquals(StringUtil.cleanText(""), "");
-    Assertions.assertEquals(StringUtil.cleanText("测 试1- \001１　3１A３ｂ５６ 7！８　9"), "测试1-131A3b567!89");
-    Assertions.assertEquals(StringUtil.cleanText("测 \002 试 \003 2-１３１　２３４　５Ａ　６"), "测试2-1312345A6");
+    Assertions.assertEquals("", StringUtil.cleanText(""));
+    Assertions.assertEquals("测试1-131A3b567!89", StringUtil.cleanText("测 试1- \001１　3１A３ｂ５６ 7！８　9"));
+    Assertions.assertEquals("测试2-1312345A6", StringUtil.cleanText("测 \002 试 \003 2-１３１　２３４　５Ａ　６"));
   }
 
   @Test
   void random() {
-    String random = StringUtil.random(12);
+    String random = StringUtil.random(0);
     log.info("random -> " + random);
-    Assertions.assertEquals(StringUtil.length(random), 12);
+    Assertions.assertEquals(0, StringUtil.length(random));
+
+    random = StringUtil.random(12);
+    log.info("random -> " + random);
+    Assertions.assertEquals(12, StringUtil.length(random));
 
     random = StringUtil.random(16);
     log.info("random -> " + random);
-    Assertions.assertEquals(StringUtil.length(random), 16);
+    Assertions.assertEquals(16, StringUtil.length(random));
 
     random = StringUtil.random(24);
     log.info("randomrandom -> " + random);
-    Assertions.assertEquals(StringUtil.length(random), 24);
+    Assertions.assertEquals(24, StringUtil.length(random));
   }
 
   @Test
   void splitList() {
-    Assertions.assertEquals(StringUtil.splitList(null, "\t"), "");
-    Assertions.assertEquals(StringUtil.splitList(new ArrayList<>(), "\t"), "");
-    Assertions.assertEquals(StringUtil.splitList(ListUtil.asList("a"), "\t"), "a");
-    Assertions.assertEquals(StringUtil.splitList(ListUtil.asList("1", "a", "2", "b"), "\t"), "1\ta\t2\tb");
+    Assertions.assertEquals("", StringUtil.splitList(null, "\t"));
+    Assertions.assertEquals("", StringUtil.splitList(new ArrayList<>(), "\t"));
+    Assertions.assertEquals("a", StringUtil.splitList(ListUtil.asList("a"), "\t"));
+    Assertions.assertEquals("1\ta\t2\tb", StringUtil.splitList(ListUtil.asList("1", "a", "2", "b"), "\t"));
+  }
+
+  @Test
+  void length() {
+    Assertions.assertEquals(0, StringUtil.length(null));
+    Assertions.assertEquals(0, StringUtil.length(""));
+    Assertions.assertEquals(3, StringUtil.length("abc"));
+  }
+
+  @Test
+  void force() {
+    Assertions.assertEquals("", StringUtil.force(null));
+    Assertions.assertEquals("", StringUtil.force(""));
+    Assertions.assertEquals("abc", StringUtil.force("abc"));
   }
 
   @Test

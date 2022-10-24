@@ -92,8 +92,8 @@ public class TimeUtil {
    * @param format 日期格式
    * @return 当前日时字符串
    */
-  public static String getDateTimeNowFormat(final String format) {
-    return formatDateTime(getDateTimeNow(), format);
+  public static String getNowDateTimeFormat(final String format) {
+    return formatDateTime(getNowDateTime(), format);
   }
 
   /**
@@ -101,7 +101,7 @@ public class TimeUtil {
    *
    * @return 系统当前日时
    */
-  public static LocalDateTime getDateTimeNow() {
+  public static LocalDateTime getNowDateTime() {
     return LocalDateTime.now();
   }
 
@@ -209,8 +209,8 @@ public class TimeUtil {
    * @param format 日时格式
    * @return 当前日期的字符串
    */
-  public static String getDateNowFormat(final String format) {
-    return formatDate(getDateNow(), format);
+  public static String getNowDateFormat(final String format) {
+    return formatDate(getNowDate(), format);
   }
 
   /**
@@ -218,7 +218,7 @@ public class TimeUtil {
    *
    * @return 系统当前日期
    */
-  public static LocalDate getDateNow() {
+  public static LocalDate getNowDate() {
     return LocalDate.now();
   }
 
@@ -294,8 +294,8 @@ public class TimeUtil {
    * 获取季度格式化字符串
    * <p>
    * "tt" (非法) -- 2019Q1
-   * "" -- 2019Q1
-   * null -- 2019Q1
+   * "" (空字符串) -- 2019Q1
+   * null (空) -- 2019Q1
    * "yyyyQR" -- 2019Q1
    * "yyyy-QR" -- 2019-Q1
    * "yyyy_QR" -- 2019_Q2

@@ -75,10 +75,10 @@ public class SftpUtil {
    * @param excludeExtList      排除的扩展名(目录下载时有效,文件下载时设置为[null])
    * @param isClearFirst        是否需要在下载前删除本地文件或目录
    */
-  public static void get(final String host, final String port, final String username, final String password,
-                         final String sftpPath, final String localFilePath,
-                         final List<String> excludeFileNameList, final List<String> excludeExtList,
-                         final boolean isClearFirst) {
+  public static void quickGet(final String host, final String port, final String username, final String password,
+                              final String sftpPath, final String localFilePath,
+                              final List<String> excludeFileNameList, final List<String> excludeExtList,
+                              final boolean isClearFirst) {
     SftpUtil sftpUtil = null;
     try {
       // 清理本地文件或目录
@@ -113,18 +113,17 @@ public class SftpUtil {
    * @param excludeExtList      排除的扩展名(目录下载时有效,文件下载时设置为[null])
    * @param isClearFirst        是否需要在上传前删除SFTP文件或目录
    */
-  public static void put(final String host, final String port, final String username, final String password,
-                         final String localFilePath, final String sftpPath,
-                         final List<String> excludeFileNameList, final List<String> excludeExtList,
-                         final boolean isClearFirst) {
+  public static void quickPut(final String host, final String port, final String username, final String password,
+                              final String localFilePath, final String sftpPath,
+                              final List<String> excludeFileNameList, final List<String> excludeExtList,
+                              final boolean isClearFirst) {
     SftpUtil sftpUtil = null;
     try {
-      // 清理SFTP文件/目录
-      if (isClearFirst) sftpUtil.rm(sftpPath);
-
       // SFTP工具类实例化 并 开启SFTP通道
       sftpUtil = new SftpUtil(host, port, username, password);
       sftpUtil.openChannel();
+      // 清理SFTP文件/目录
+      if (isClearFirst) sftpUtil.rm(sftpPath);
       // 本地文件/目录上传至SFTP
       sftpUtil.put(localFilePath, sftpPath, excludeFileNameList, excludeExtList);
     } catch (SftpException ex) {
@@ -159,7 +158,7 @@ public class SftpUtil {
       this.channelSftp = (ChannelSftp) channel; // 转换为ChannelSftp对象
       this.rootPath = StringUtil.removeEnd(channelSftp.pwd(), FileUtil.PATH_SEPARATOR); // 用户根路径
     } catch (Exception ex) {
-      throw new SftpException(String.format("SFTP连接失败[主机:%s,端口:%s,用户:%s,秘钥:%s]", host, StringUtil.isBlank(port) ? SFTP_DEFAULT_PORT : port, username, password), ex);
+      throw new SftpException(String.format("SFTP服务器连接失败[主机:%s,端口:%s,用户:%s,秘钥:%s]", host, StringUtil.isBlank(port) ? SFTP_DEFAULT_PORT : port, username, password), ex);
     }
   }
 
@@ -187,7 +186,7 @@ public class SftpUtil {
 
     // SFTP路径不存在 -> 退出
     if (!this.isExists(absolutePath)) {
-      log.info(String.format("[%s]文件/目录[%s]不存在 - 退出处理!", "get", absolutePath));
+      log.info(String.format("[%s]文件/目录[%s]不存在!", "get", absolutePath));
       return;
     }
 
@@ -375,10 +374,12 @@ public class SftpUtil {
       // 拼装排序列表
       List<String> fileNameList = new ArrayList<>();
       for (ChannelSftp.LsEntry entry : fileList) {
-        if (StringUtil.notEmpty(ext) && ext.equals(FileUtil.getExtension(entry.getFilename()))) {
-          fileNameList.add(entry.getFilename());
-        } else if (StringUtil.isEmpty(ext)) {
-          fileNameList.add(entry.getFilename());
+        if (!entry.getFilename().startsWith(FileUtil.NAME_EXCLUDE_PREFIX)) {
+          if (StringUtil.notEmpty(ext) && ext.equals(FileUtil.getExtension(entry.getFilename()))) {
+            fileNameList.add(entry.getFilename());
+          } else if (StringUtil.isEmpty(ext)) {
+            fileNameList.add(entry.getFilename());
+          }
         }
       }
 

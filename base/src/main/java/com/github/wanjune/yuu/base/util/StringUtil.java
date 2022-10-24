@@ -50,7 +50,7 @@ public class StringUtil {
    */
   public static String instance(final String string, final Map<String, Object> params) {
     String strResult = string;
-    if (notEmpty(string) && MapUtil.nonEmpty(params)) {
+    if (notEmpty(string) && MapUtil.notEmpty(params)) {
       for (String itemKey : params.keySet()) {
         strResult = strResult.replaceAll(CstUtil.CURLY_BRACKET_PREFIX + itemKey + CstUtil.CURLY_BRACKET_SUFFIX, params.get(itemKey).toString());
       }
@@ -109,7 +109,7 @@ public class StringUtil {
 
   /**
    * 去除字符串头部字符串
-   * <p>匹配->移除;不匹配->原字符串</p>
+   * <p>匹配 -> 移除;不匹配 -> 原字符串</p>
    *
    * @param string 待处理的字符串
    * @param start  要移除的头部字符串
@@ -121,7 +121,7 @@ public class StringUtil {
 
   /**
    * 去除字符串尾部字符串
-   * <p>匹配->移除;不匹配->原字符串</p>
+   * <p>匹配 -> 移除;不匹配 -> 原字符串</p>
    *
    * @param string 待处理的字符串
    * @param end    要移除的尾部字符串
@@ -311,13 +311,11 @@ public class StringUtil {
    */
   public static boolean isBlank(final CharSequence cs) {
     int strLen = length(cs);
-
     if (strLen > 0) {
       for (int i = 0; i < strLen; i++) {
         if (!Character.isWhitespace(cs.charAt(i))) return false;
       }
     }
-
     return true;
   }
 

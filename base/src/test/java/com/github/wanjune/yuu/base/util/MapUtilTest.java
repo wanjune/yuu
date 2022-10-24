@@ -18,10 +18,10 @@ class MapUtilTest {
   }
 
   @Test
-  void nonEmpty() {
-    Assertions.assertFalse(MapUtil.nonEmpty(null));
-    Assertions.assertFalse(MapUtil.nonEmpty(new HashMap<>()));
-    Assertions.assertTrue(MapUtil.nonEmpty(new HashMap<String, String>() {{
+  void notEmpty() {
+    Assertions.assertFalse(MapUtil.notEmpty(null));
+    Assertions.assertFalse(MapUtil.notEmpty(new HashMap<>()));
+    Assertions.assertTrue(MapUtil.notEmpty(new HashMap<String, String>() {{
       put("k1", "v1");
     }}));
   }
@@ -32,7 +32,7 @@ class MapUtilTest {
       put("k1", "v1");
     }};
 
-    Assertions.assertEquals(MapUtil.get(map, "k1"), "v1");
+    Assertions.assertEquals("v1", MapUtil.get(map, "k1"));
     Assertions.assertNull(MapUtil.get(map, "k2"));
   }
 
@@ -42,8 +42,8 @@ class MapUtilTest {
       put("k1", "v1");
     }};
 
-    Assertions.assertEquals(MapUtil.get(map, "k1", "v2"), "v1");
-    Assertions.assertEquals(MapUtil.get(map, "k2", "v2"), "v2");
+    Assertions.assertEquals("v1", MapUtil.get(map, "k1", "v2"));
+    Assertions.assertEquals("v2", MapUtil.get(map, "k2", "v2"));
   }
 
   @Test
@@ -51,7 +51,7 @@ class MapUtilTest {
     Map<String, String> map = MapUtil.of("k1", "v1", "k2", "v2");
 
     Assertions.assertEquals(map.size(), 2);
-    Assertions.assertEquals(MapUtil.get(map, "k1"), "v1");
-    Assertions.assertEquals(MapUtil.get(map, "k2"), "v2");
+    Assertions.assertEquals("v1", MapUtil.get(map, "k1"));
+    Assertions.assertEquals("v2", MapUtil.get(map, "k2"));
   }
 }
