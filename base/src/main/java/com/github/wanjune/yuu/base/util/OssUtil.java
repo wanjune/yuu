@@ -40,42 +40,42 @@ public class OssUtil {
   /**
    * OSS文件上传
    *
-   * @param ossFilePath   OSS文件路径
-   * @param localFilePath 本地文件路径
+   * @param ossPath   OSS文件路径
+   * @param localPath 本地文件路径
    */
-  public void uploadFile(String ossFilePath, String localFilePath) throws Exception {
+  public void uploadFile(String ossPath, String localPath) throws Exception {
     try {
       // 计算文件大小
-      final File localFile = new File(localFilePath);
+      final File localFile = new File(localPath);
       long localFileLength = localFile.length();
 
       if (localFileLength <= FILE_LIMIT_SIZE) {
-        putObjectSimple(ossFilePath, localFilePath);
+        putObjectSimple(ossPath, localPath);
       } else {
-        putObjectPart(ossFilePath, localFilePath);
+        putObjectPart(ossPath, localPath);
       }
     } catch (Exception ex) {
-      throw new OssException(String.format("上传文件[%s]失败", ossFilePath), ex);
+      throw new OssException(String.format("上传文件[%s]失败", ossPath), ex);
     }
   }
 
   /**
    * OSS文件删除
    *
-   * @param ossFilePath OSS文件路径
+   * @param ossPath OSS文件路径
    */
-  public void deleteFile(String ossFilePath) {
+  public void deleteFile(String ossPath) {
     try {
-      deleteObject(ossFilePath);
+      deleteObject(ossPath);
     } catch (Exception ex) {
-      throw new OssException(String.format("删除文件[%s]失败", ossFilePath), ex);
+      throw new OssException(String.format("删除文件[%s]失败", ossPath), ex);
     }
   }
 
   /**
    * OSS目录删除
    *
-   * @param ossFilePath OSS文件路径
+   * @param ossPath OSS文件路径
    */
   public void deleteDir(String ossDirPath) {
     try {
@@ -103,18 +103,18 @@ public class OssUtil {
   /**
    * OSS文件单个上传
    *
-   * @param ossFilePath   OSS文件路径
-   * @param localFilePath 本地文件路径
+   * @param ossPath   OSS文件路径
+   * @param localPath 本地文件路径
    */
-  private void putObjectSimple(String ossFilePath, String localFilePath) throws Exception {
+  private void putObjectSimple(String ossPath, String localPath) throws Exception {
     try {
-      PutObjectRequest putObjectSimpleRequest = new PutObjectRequest(this.bucket, ossFilePath, new File(localFilePath));
+      PutObjectRequest putObjectSimpleRequest = new PutObjectRequest(this.bucket, ossPath, new File(localPath));
       putObjectSimpleRequest.setMetadata(this.getDefMetadata());
       this.ossClient.putObject(putObjectSimpleRequest);
 
-      log.info(String.format("[%s]OSS上传文件[%s]->[%s]正常结束!", "putObjectSimple", localFilePath, ossFilePath));
+      log.info(String.format("[%s]OSS上传文件[%s]->[%s]正常结束!", "putObjectSimple", localPath, ossPath));
     } catch (Exception ex) {
-      log.error(String.format("[%s]OSS上传文件[%s]->[%s]发生异常!", "putObjectSimple", localFilePath, ossFilePath), ex);
+      log.error(String.format("[%s]OSS上传文件[%s]->[%s]发生异常!", "putObjectSimple", localPath, ossPath), ex);
       throw ex;
     }
   }
@@ -122,15 +122,15 @@ public class OssUtil {
   /**
    * OSS文件分片上传
    *
-   * @param ossFilePath   OSS文件路径
-   * @param localFilePath 本地文件路径
+   * @param ossPath   OSS文件路径
+   * @param localPath 本地文件路径
    */
-  private void putObjectPart(String ossFilePath, String localFilePath) throws Exception {
+  private void putObjectPart(String ossPath, String localPath) throws Exception {
 
     String uploadId = null;
 
     try {
-      InitiateMultipartUploadRequest putObjectPartRequest = new InitiateMultipartUploadRequest(this.bucket, ossFilePath);
+      InitiateMultipartUploadRequest putObjectPartRequest = new InitiateMultipartUploadRequest(this.bucket, ossPath);
       putObjectPartRequest.setObjectMetadata(this.getDefMetadata());
 
       // 初始化分片
@@ -139,7 +139,7 @@ public class OssUtil {
       List<PartETag> partETags = new ArrayList<>();
 
       // 计算分片
-      final File localFile = new File(localFilePath);
+      final File localFile = new File(localPath);
       long localFileLength = localFile.length();
       int partCount = (int) (localFileLength / FILE_PART_SIZE);
       if (localFileLength % FILE_PART_SIZE != 0) {
@@ -158,7 +158,7 @@ public class OssUtil {
 
         uploadPartRequest = new UploadPartRequest();
         uploadPartRequest.setBucketName(this.bucket);
-        uploadPartRequest.setKey(ossFilePath);
+        uploadPartRequest.setKey(ossPath);
         uploadPartRequest.setUploadId(uploadId);
         uploadPartRequest.setInputStream(instream);
         uploadPartRequest.setPartSize(curPartSize);
@@ -169,24 +169,24 @@ public class OssUtil {
       }
 
       // 分片合并为一个文件的文件
-      ossClient.completeMultipartUpload(new CompleteMultipartUploadRequest(this.bucket, ossFilePath, uploadId, partETags));
+      ossClient.completeMultipartUpload(new CompleteMultipartUploadRequest(this.bucket, ossPath, uploadId, partETags));
 
-      log.info(String.format("[%s]OSS分片上传文件[%s]->[%s]正常结束!", "putObjectPart", localFilePath, ossFilePath));
+      log.info(String.format("[%s]OSS分片上传文件[%s]->[%s]正常结束!", "putObjectPart", localPath, ossPath));
     } catch (Exception ex) {
-      log.error(String.format("[%s]OSS分片上传文件,[%s]->[%s]发生异常!", "putObjectPart", localFilePath, ossFilePath), ex);
+      log.error(String.format("[%s]OSS分片上传文件,[%s]->[%s]发生异常!", "putObjectPart", localPath, ossPath), ex);
 
       // 取消分片上传
       if (StringUtil.notBlank(uploadId)) {
         try {
-          ListPartsRequest listPartsRequest = new ListPartsRequest(this.bucket, ossFilePath, uploadId);
+          ListPartsRequest listPartsRequest = new ListPartsRequest(this.bucket, ossPath, uploadId);
           listPartsRequest.setMaxParts(100);
           listPartsRequest.setPartNumberMarker(1);
           PartListing partListing = ossClient.listParts(listPartsRequest);
 
           // 如果分片数据已上传了 -> 删除数据
           if (partListing.getParts().size() > 0) {
-            ossClient.abortMultipartUpload(new AbortMultipartUploadRequest(this.bucket, ossFilePath, uploadId));
-            log.info(String.format("[%s]取消文件分片上传[%s]->[%s]正常结束!", "putObjectPart", localFilePath, ossFilePath));
+            ossClient.abortMultipartUpload(new AbortMultipartUploadRequest(this.bucket, ossPath, uploadId));
+            log.info(String.format("[%s]取消文件分片上传[%s]->[%s]正常结束!", "putObjectPart", localPath, ossPath));
           }
         } catch (Exception amuEx) {
           log.error(String.format("[%s]取消文件分片上传,发生异常!", "putObjectPart"), amuEx);
@@ -232,14 +232,14 @@ public class OssUtil {
   /**
    * OSS文件是否存在
    *
-   * @param ossFilePath OSS文件路径
+   * @param ossPath OSS文件路径
    * @return true:存在 / false:不存在
    */
-  public boolean isFileExist(String ossFilePath) {
+  public boolean isExists(String ossPath) {
     try {
-      return ossClient.doesObjectExist(this.bucket, ossFilePath);
+      return ossClient.doesObjectExist(this.bucket, ossPath);
     } catch (Exception ex) {
-      throw new OssException(String.format("文件检查[%s]失败", ossFilePath), ex);
+      throw new OssException(String.format("文件检查[%s]失败", ossPath), ex);
     }
   }
 

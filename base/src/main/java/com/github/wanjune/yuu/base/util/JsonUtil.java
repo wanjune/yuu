@@ -16,6 +16,14 @@ import java.util.Map;
  */
 public class JsonUtil {
 
+  // 类型引用 - Map
+  public static final TypeReference<Map<String, Object>> TYPE_REF_MAP = new TypeReference<Map<String, Object>>() {
+  };
+
+  // 类型引用 - List<Map>
+  public static final TypeReference<ArrayList<Map<String, Object>>> TYPE_REF_LIST_MAP = new TypeReference<ArrayList<Map<String, Object>>>() {
+  };
+
   // Jackson对象
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -37,7 +45,7 @@ public class JsonUtil {
    * JSON字符串转换为对象
    *
    * @param jsonString JSON字符串
-   * @param typeRef    对象类型引用
+   * @param typeRef    数据类型引用
    * @return 数据对象
    */
   public static <T> T getType(final String jsonString, final TypeReference<T> typeRef) {
@@ -56,8 +64,7 @@ public class JsonUtil {
    */
   public static Map<String, Object> getMap(final String jsonString) {
     try {
-      return getType(jsonString, new TypeReference<Map<String, Object>>() {
-      });
+      return getType(jsonString, TYPE_REF_MAP);
     } catch (Exception ex) {
       throw new YuuException(String.format("字符串[%S]转换Map失败", jsonString), ex);
     }
@@ -71,8 +78,7 @@ public class JsonUtil {
    */
   public static List<Map<String, Object>> getMapList(final String jsonString) {
     try {
-      return getType(jsonString, new TypeReference<ArrayList<Map<String, Object>>>() {
-      });
+      return getType(jsonString, TYPE_REF_LIST_MAP);
     } catch (Exception ex) {
       throw new YuuException(String.format("字符串[%S]转换Map列表失败", jsonString), ex);
     }
@@ -86,8 +92,7 @@ public class JsonUtil {
    */
   public static boolean isJsonString(final String jsonString) {
     try {
-      MAPPER.readValue(jsonString, new TypeReference<Map<String, Object>>() {
-      });
+      MAPPER.readValue(jsonString, TYPE_REF_MAP);
       return true;
     } catch (Exception ex) {
       return false;
@@ -102,8 +107,7 @@ public class JsonUtil {
    */
   public static boolean isJsonArray(final String jsonString) {
     try {
-      MAPPER.readValue(jsonString, new TypeReference<ArrayList<Map<String, Object>>>() {
-      });
+      MAPPER.readValue(jsonString, TYPE_REF_LIST_MAP);
       return true;
     } catch (Exception ex) {
       return false;

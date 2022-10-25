@@ -42,50 +42,50 @@ public class FileUtil {
   private static final int BUF_SIZE = 4096;
 
   /**
-   * 文件或目录是否存在
+   * 文件/目录是否存在
    *
-   * @param filePath 文件或目录路径
+   * @param path 文件/目录路径
    * @return 判断结果
    */
-  public static boolean isExists(final String filePath) {
+  public static boolean isExists(final String path) {
     try {
-      return new File(filePath).exists();
+      return new File(path).exists();
     } catch (Exception ex) {
-      throw new YuuException(String.format("判断文件[%s]是否存失败", filePath), ex);
+      throw new YuuException(String.format("判断文件[%s]是否存失败", path), ex);
     }
   }
 
   /**
-   * 创建文件
+   * 创建文件/目录
    * <p>如果上级目录不存在,创建上级目录</p>
    * <p>相对[new File()],多一个创建上级目录 -> 避免出现异常</p>
    *
-   * @param filePath 文件路径
+   * @param path 文件路径
    */
   @SuppressWarnings("ALL")
-  public static File create(final String filePath) {
+  public static File create(final String path) {
     try {
-      File file = new File(filePath);
+      File file = new File(path);
       file.getParentFile().mkdirs();
       return file;
     } catch (Exception ex) {
-      throw new YuuException(String.format("创建文件[%s]失败", filePath), ex);
+      throw new YuuException(String.format("创建文件[%s]失败", path), ex);
     }
   }
 
   /**
-   * 删除文件或目录
+   * 删除文件/目录
    *
-   * @param filePath 文件或目录路径
+   * @param path 文件/目录路径
    */
-  public static void delete(final String filePath) {
-    delete(new File(filePath));
+  public static void delete(final String path) {
+    delete(new File(path));
   }
 
   /**
-   * 删除文件或目录
+   * 删除文件/目录
    *
-   * @param file 要删除的文件或目录
+   * @param file 要删除的文件/目录
    */
   @SuppressWarnings("ALL")
   public static void delete(final File file) {
@@ -108,17 +108,17 @@ public class FileUtil {
   }
 
   /**
-   * 获取文件的上级目录路径
+   * 获取文件/目录上级目录路径
    *
-   * @param filePath 文件路径
+   * @param path 文件路径
    * @return 上级目录
    */
-  public static String getParentPath(final String filePath) {
+  public static String getParentPath(final String path) {
     try {
-      String strFilePath = StringUtil.removeEnd(filePath.replaceAll(PATH_SEPARATOR_WIN, PATH_SEPARATOR), PATH_SEPARATOR); // 替换Windows系统分割符 并 去除尾部分隔符
-      return strFilePath.substring(0, strFilePath.lastIndexOf(PATH_SEPARATOR));
+      String stdPath = StringUtil.removeEnd(path.replaceAll(PATH_SEPARATOR_WIN, PATH_SEPARATOR), PATH_SEPARATOR); // 替换Windows系统分割符 并 去除尾部分隔符
+      return stdPath.substring(0, stdPath.lastIndexOf(PATH_SEPARATOR));
     } catch (Exception ex) {
-      throw new YuuException(String.format("获取[%s]的上级路径失败", filePath), ex);
+      throw new YuuException(String.format("获取[%s]的上级路径失败", path), ex);
     }
   }
 
@@ -131,8 +131,8 @@ public class FileUtil {
    */
   public static String getChildPath(final String dirPath, final String fileName) {
     try {
-      String strDirPath = StringUtil.removeEnd(dirPath.replaceAll(PATH_SEPARATOR_WIN, PATH_SEPARATOR), PATH_SEPARATOR); // 替换Windows系统分割符 并 去除尾部分隔符
-      return strDirPath.concat(PATH_SEPARATOR).concat(fileName);
+      String stdDirPath = StringUtil.removeEnd(dirPath.replaceAll(PATH_SEPARATOR_WIN, PATH_SEPARATOR), PATH_SEPARATOR); // 替换Windows系统分割符 并 去除尾部分隔符
+      return stdDirPath.concat(PATH_SEPARATOR).concat(fileName);
     } catch (Exception ex) {
       throw new YuuException(String.format("获取[%s]的下级[%s]路径失败", dirPath, fileName), ex);
     }
@@ -160,11 +160,11 @@ public class FileUtil {
   /**
    * 获取目录下文件路径列表
    *
-   * @param dirPath 指定的目录路径
-   * @param extList 扩展名列表(null->所有文件)
+   * @param dirPath     指定的目录路径
+   * @param fileExtList 扩展名列表(null->所有文件)
    * @return 目录下的文件列表
    */
-  public static List<String> listFiles(final String dirPath, final List<String> extList) {
+  public static List<String> listFiles(final String dirPath, final List<String> fileExtList) {
     try {
       List<String> filePathList = new ArrayList<>();
       File dir = new File(dirPath);
@@ -174,9 +174,9 @@ public class FileUtil {
         if (fileArrays != null && fileArrays.length > 0) {
           for (File iFile : fileArrays) {
             if (!iFile.getName().startsWith(NAME_EXCLUDE_PREFIX)) {
-              if (ListUtil.isEmpty(extList)) {
+              if (ListUtil.isEmpty(fileExtList)) {
                 filePathList.add(iFile.getAbsolutePath());
-              } else if (ListUtil.notEmpty(extList) && StringUtil.isContains(getExtension(iFile.getName()), extList, true)) {
+              } else if (ListUtil.notEmpty(fileExtList) && StringUtil.isContains(getExtension(iFile.getName()), fileExtList, true)) {
                 filePathList.add(iFile.getAbsolutePath());
               }
             }
