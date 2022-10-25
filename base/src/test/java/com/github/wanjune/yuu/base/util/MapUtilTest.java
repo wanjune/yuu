@@ -37,6 +37,20 @@ class MapUtilTest {
   }
 
   @Test
+  void copy() {
+    Map<String, String> map1 = new HashMap<String, String>() {{
+      put("k1", "v1");
+    }};
+
+    Map<String, String> map2 = MapUtil.copy(map1);
+    map1.remove("k1");
+
+    Assertions.assertTrue(map1.isEmpty());
+    Assertions.assertEquals("v1", MapUtil.get(map2, "k1"));
+    Assertions.assertNull(MapUtil.get(map2, "k2"));
+  }
+
+  @Test
   void getDef() {
     Map<String, String> map = new HashMap<String, String>() {{
       put("k1", "v1");

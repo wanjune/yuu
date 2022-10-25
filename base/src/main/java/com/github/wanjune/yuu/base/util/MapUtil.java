@@ -59,6 +59,17 @@ public class MapUtil {
     return map == null || key == null || !map.containsKey(key) ? defaultValue : map.getOrDefault(key, defaultValue);
   }
 
+  /**
+   * Map对象复制
+   *
+   * @param src 原Map对象
+   * @param <K> 键的类型
+   * @param <V> 值的类型
+   * @return 复制的Map对象
+   */
+  public static <K, V> Map<K, V> copy(final Map<K, V> src) {
+    return isEmpty(src) ? src : new HashMap<>(src);
+  }
 
   /**
    * 快速生成Map对象

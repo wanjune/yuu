@@ -1,6 +1,9 @@
 package com.github.wanjune.yuu.base.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,10 +57,10 @@ public class ListUtil {
    */
   public static List<String> asList(final String arraysString) {
     if (StringUtil.isBlank(arraysString)) return null;
-    String reArraysString = StringUtil.trimFirstAndLastChar(arraysString, CstUtil.BRACKET)
+    String stdArraysString = StringUtil.trimFirstAndLastChar(arraysString, CstUtil.BRACKET)
         .replaceAll(CstUtil.COMMA + StringUtil.SPACE, CstUtil.COMMA)
         .replaceAll(CstUtil.DOUBLE_QUOTE, StringUtil.EMPTY);
-    return StringUtil.isBlank(reArraysString) ? null : new ArrayList<>((Arrays.asList(reArraysString.split(CstUtil.COMMA))));
+    return StringUtil.isBlank(stdArraysString) ? null : new ArrayList<>((Arrays.asList(stdArraysString.split(CstUtil.COMMA))));
   }
 
 
@@ -107,17 +110,12 @@ public class ListUtil {
   /**
    * 列表对象复制
    *
-   * @param dest 目标列表对象
-   * @param src  原列表对象
-   * @param <T>  类型
+   * @param src 原列表对象
+   * @param <T> 类型
+   * @return 复制的列表对象
    */
-  public static <T> void copy(final List<T> dest, final List<T> src) {
-    if (notEmpty(src)) {
-      for (int i = 0; i < src.size(); i++) {
-        dest.add(null);
-      }
-      Collections.copy(dest, src);
-    }
+  public static <T> List<T> copy(final List<T> src) {
+    return isEmpty(src) ? src : new ArrayList<>(src);
   }
 
   /**

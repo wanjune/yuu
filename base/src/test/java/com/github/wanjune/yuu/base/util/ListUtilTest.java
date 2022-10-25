@@ -91,11 +91,19 @@ class ListUtilTest {
   @Test
   void copy() {
     List<MessageModel> list3 = ListUtil.asList(new MessageModel(1101, "测试消息01"), new MessageModel(1102, "测试消息02"));
-    List<MessageModel> list4 = new ArrayList<>();
-    ListUtil.copy(list4, list3);
+    List<MessageModel> list4 = ListUtil.copy(list3);
 
     Assertions.assertEquals(1101, list4.get(0).getCode());
     Assertions.assertEquals("测试消息02", list4.get(1).getMessage());
+
+    list3.remove(1);
+    list3.remove(0);
+
+    Assertions.assertEquals(1101, list4.get(0).getCode());
+    Assertions.assertEquals("测试消息02", list4.get(1).getMessage());
+
+    Assertions.assertEquals(0, ListUtil.copy(list3).size());
+    Assertions.assertNull(ListUtil.copy(null));
   }
 
   @Test
