@@ -2,7 +2,7 @@ package com.github.wanjune.yuu.base.exception;
 
 import com.github.wanjune.yuu.base.model.MessageModel;
 import com.github.wanjune.yuu.base.util.JsonUtil;
-import com.github.wanjune.yuu.base.value.TaskMessageEnum;
+import com.github.wanjune.yuu.base.value.Messageable;
 import lombok.SneakyThrows;
 
 public class YuuException extends RuntimeException {
@@ -25,12 +25,12 @@ public class YuuException extends RuntimeException {
     super();
   }
 
-  public YuuException(TaskMessageEnum messageEnum) {
-    this.messageModel = new MessageModel(messageEnum);
+  public YuuException(Messageable message) {
+    this.messageModel = new MessageModel(message);
   }
 
-  public YuuException(TaskMessageEnum messageEnum, Object obj) {
-    this.messageModel = new MessageModel(messageEnum, obj);
+  public YuuException(Messageable message, Object obj) {
+    this.messageModel = new MessageModel(message, obj);
   }
 
   public MessageModel getMessageModel() {

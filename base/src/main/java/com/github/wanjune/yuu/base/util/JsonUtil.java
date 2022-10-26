@@ -28,17 +28,18 @@ public class JsonUtil {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   /**
-   * 对象转换为JSON字符串
+   * 获取对象类型的引用
+   * <p>目的:避免引用JsonUtil代码的import中,出现Jackson的TypeReference</p>
+   * <p>参数:[new HashMap<String, Object>()] -> 返回等同:[new TypeReference<Map<String, Object>>() {}]</p>
+   * <p>参数:[new ArrayList<Map<String, Object>>()] -> 返回等同:[new TypeReference<ArrayList<Map<String, Object>>>() {}]</p>
    *
-   * @param object 对象
-   * @return JSON字符串
+   * @param type 对象类型
+   * @param <T>  对象类型
+   * @return 类型引用
    */
-  public static String writeValueAsString(final Object object) {
-    try {
-      return StringUtil.trimFirstAndLastChar(MAPPER.writeValueAsString(object), CstUtil.DOUBLE_QUOTE);
-    } catch (Exception ex) {
-      throw new YuuException(String.format("[%S]转换JSON字符串失败", object), ex);
-    }
+  public static <T> TypeReference<T> getTypeRef(T type) {
+    return new TypeReference<T>() {
+    };
   }
 
   /**
@@ -81,6 +82,20 @@ public class JsonUtil {
       return getType(jsonString, TYPE_REF_LIST_MAP);
     } catch (Exception ex) {
       throw new YuuException(String.format("字符串[%S]转换Map列表失败", jsonString), ex);
+    }
+  }
+
+  /**
+   * 对象转换为JSON字符串
+   *
+   * @param object 对象
+   * @return JSON字符串
+   */
+  public static String writeValueAsString(final Object object) {
+    try {
+      return StringUtil.trimFirstAndLastChar(MAPPER.writeValueAsString(object), CstUtil.DOUBLE_QUOTE);
+    } catch (Exception ex) {
+      throw new YuuException(String.format("[%S]转换JSON字符串失败", object), ex);
     }
   }
 

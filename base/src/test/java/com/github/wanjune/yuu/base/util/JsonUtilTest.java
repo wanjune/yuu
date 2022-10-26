@@ -5,6 +5,8 @@ import com.github.wanjune.yuu.base.model.MessageModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,19 @@ class JsonUtilTest {
 
     for (Map<String, Object> message : messageList) {
       Assertions.assertEquals(message.get("code").equals(1103) ? "Jackson测试3" : "Jackson测试4", message.get("message"));
+    }
+  }
+
+  @Test
+  void getTypeRef() {
+    Map<String, Object> msg1 = JsonUtil.getType("{\"code\":1103,\"message\":\"Jackson测试3\"}", JsonUtil.getTypeRef(new HashMap<String, Object>()));
+    Assertions.assertEquals(1103, msg1.get("code"));
+    Assertions.assertEquals("Jackson测试3", msg1.get("message"));
+
+    List<Map<String, Object>> messageList = JsonUtil.getType("[{\"code\":1103,\"message\":\"Jackson测试3\"},{\"code\":1104,\"message\":\"Jackson测试4\"}]", JsonUtil.getTypeRef(new ArrayList<Map<String, Object>>()));
+
+    for (Map<String, Object> msg2 : messageList) {
+      Assertions.assertEquals(msg2.get("code").equals(1103) ? "Jackson测试3" : "Jackson测试4", msg2.get("message"));
     }
   }
 

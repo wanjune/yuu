@@ -27,8 +27,24 @@ import java.util.List;
 @Slf4j
 @SuppressWarnings("all")
 public class OssUtil {
-  private static final long FILE_LIMIT_SIZE = 2 * 1024 * 1024 * 1024L;   // 2 GB
-  private static final long FILE_PART_SIZE = 1 * 1024 * 1024 * 1024L;   // 1 GB
+  // 允许打开的最大HTTP连接数(默认为1024个)
+  private static final int MAX_CONNECTIONS = 200;
+  // Socket层传输数据的超时时间(默认50000毫秒)
+  private static final int SOCKET_TIMEOUT = 300000;
+  // 建立连接的超时时间(默认50000毫秒)
+  private static final int CONNECTION_TIMEOUT = 120000;
+  // 从连接池中获取连接的超时时间[单位:毫秒](默认不超时)
+  private static final int CONNECTION_REQUEST_TIMEOUT = 60000;
+  // 连接空闲超时时间(默认60000毫秒)
+  private static final int IDLE_CONNECTION_TIME = 60000;
+  // 失败请求重试次数(默认3次)
+  private static final int MAX_ERROR_RETRY = 20;
+
+  // 上传单个文件大小限制(2GB)
+  private static final long FILE_SINGLE_LIMIT_LENGTH = 2 * 1024 * 1024 * 1024L;
+  // 上传分片文件大小限制(1GB)
+  private static final long FILE_PART_LIMIT_LENGTH = 1 * 1024 * 1024 * 1024L;
+
   private final String bucket;
   private final OSS ossClient;
 
@@ -38,44 +54,48 @@ public class OssUtil {
   }
 
   /**
+   * 关闭OSS客户端
+   */
+  @PreDestroy
+  public void close() {
+    if (ossClient != null) ossClient.shutdown();
+  }
+
+  /**
    * OSS文件上传
    *
-   * @param ossPath   OSS文件路径
-   * @param localPath 本地文件路径
+   * @param ossFilePath   OSS文件路径
+   * @param localFilePath 本地文件路径
    */
-  public void uploadFile(String ossPath, String localPath) throws Exception {
+  public void putFile(String ossFilePath, String localFilePath) throws Exception {
     try {
-      // 计算文件大小
-      final File localFile = new File(localPath);
-      long localFileLength = localFile.length();
-
-      if (localFileLength <= FILE_LIMIT_SIZE) {
-        putObjectSimple(ossPath, localPath);
+      if (new File(localFilePath).length() <= FILE_SINGLE_LIMIT_LENGTH) {
+        putFileSingle(ossFilePath, localFilePath);
       } else {
-        putObjectPart(ossPath, localPath);
+        putFilePart(ossFilePath, localFilePath);
       }
     } catch (Exception ex) {
-      throw new OssException(String.format("上传文件[%s]失败", ossPath), ex);
+      throw new OssException(String.format("上传文件[%s]失败", ossFilePath), ex);
     }
   }
 
   /**
    * OSS文件删除
    *
-   * @param ossPath OSS文件路径
+   * @param ossFilePath OSS文件路径
    */
-  public void deleteFile(String ossPath) {
+  public void deleteFile(String ossFilePath) {
     try {
-      deleteObject(ossPath);
+      deleteObject(ossFilePath);
     } catch (Exception ex) {
-      throw new OssException(String.format("删除文件[%s]失败", ossPath), ex);
+      throw new OssException(String.format("删除文件[%s]失败", ossFilePath), ex);
     }
   }
 
   /**
    * OSS目录删除
    *
-   * @param ossPath OSS文件路径
+   * @param ossDirPath OSS目录路径
    */
   public void deleteDir(String ossDirPath) {
     try {
@@ -92,12 +112,12 @@ public class OssUtil {
   }
 
   /**
-   * OSS文件或目录路径
+   * 删除OSS文件/目录
    *
-   * @param ossFileOrDirPath OSS文件路径
+   * @param ossPath OSS文件路径
    */
-  private void deleteObject(String ossFileOrDirPath) {
-    ossClient.deleteObject(this.bucket, ossFileOrDirPath);
+  private void deleteObject(String ossPath) {
+    ossClient.deleteObject(this.bucket, ossPath);
   }
 
   /**
@@ -106,7 +126,7 @@ public class OssUtil {
    * @param ossPath   OSS文件路径
    * @param localPath 本地文件路径
    */
-  private void putObjectSimple(String ossPath, String localPath) throws Exception {
+  private void putFileSingle(String ossPath, String localPath) throws Exception {
     try {
       PutObjectRequest putObjectSimpleRequest = new PutObjectRequest(this.bucket, ossPath, new File(localPath));
       putObjectSimpleRequest.setMetadata(this.getDefMetadata());
@@ -125,7 +145,7 @@ public class OssUtil {
    * @param ossPath   OSS文件路径
    * @param localPath 本地文件路径
    */
-  private void putObjectPart(String ossPath, String localPath) throws Exception {
+  private void putFilePart(String ossPath, String localPath) throws Exception {
 
     String uploadId = null;
 
@@ -136,22 +156,23 @@ public class OssUtil {
       // 初始化分片
       InitiateMultipartUploadResult uploadResult = ossClient.initiateMultipartUpload(putObjectPartRequest);
       uploadId = uploadResult.getUploadId();
-      List<PartETag> partETags = new ArrayList<>();
+      List<PartETag> partETagList = new ArrayList<>();
 
       // 计算分片
       final File localFile = new File(localPath);
-      long localFileLength = localFile.length();
-      int partCount = (int) (localFileLength / FILE_PART_SIZE);
-      if (localFileLength % FILE_PART_SIZE != 0) {
+      long localFileLen = localFile.length();
+      int partCount = (int) (localFileLen / FILE_PART_LIMIT_LENGTH);
+      if (localFileLen % FILE_PART_LIMIT_LENGTH != 0) {
         partCount++;
       }
 
       // 遍历分片上传
       UploadPartRequest uploadPartRequest;
       UploadPartResult uploadPartResult;
+      long startPos, curPartSize;
       for (int i = 0; i < partCount; i++) {
-        long startPos = i * FILE_PART_SIZE;
-        long curPartSize = (i + 1 == partCount) ? (localFileLength - startPos) : FILE_PART_SIZE;
+        startPos = i * FILE_PART_LIMIT_LENGTH;
+        curPartSize = (i + 1 == partCount) ? (localFileLen - startPos) : FILE_PART_LIMIT_LENGTH;
 
         InputStream instream = new FileInputStream(localFile);
         instream.skip(startPos);
@@ -165,11 +186,11 @@ public class OssUtil {
         uploadPartRequest.setPartNumber(i + 1); // 设置分片号,范围是1~10000
         uploadPartResult = this.ossClient.uploadPart(uploadPartRequest);
         // 保存OSS的返回结果结果中的PartETag
-        partETags.add(uploadPartResult.getPartETag());
+        partETagList.add(uploadPartResult.getPartETag());
       }
 
       // 分片合并为一个文件的文件
-      ossClient.completeMultipartUpload(new CompleteMultipartUploadRequest(this.bucket, ossPath, uploadId, partETags));
+      ossClient.completeMultipartUpload(new CompleteMultipartUploadRequest(this.bucket, ossPath, uploadId, partETagList));
 
       log.info(String.format("[%s]OSS分片上传文件[%s]->[%s]正常结束!", "putObjectPart", localPath, ossPath));
     } catch (Exception ex) {
@@ -239,22 +260,22 @@ public class OssUtil {
     try {
       return ossClient.doesObjectExist(this.bucket, ossPath);
     } catch (Exception ex) {
-      throw new OssException(String.format("文件检查[%s]失败", ossPath), ex);
+      throw new OssException(String.format("检查文件[%s]是否存在失败", ossPath), ex);
     }
   }
 
   /**
-   * 获取文件或目录的上级目录路径
+   * 获取文件/目录的上级目录路径
    *
-   * @param ossFileOrDir OSS文件或目录
+   * @param ossPath OSS文件/目录
    * @return 上级目录路径
    */
-  public String getParent(String ossFileOrDir) {
+  public String getParentPath(String ossPath) {
     try {
-      String strFilePath = StringUtil.removeEnd(ossFileOrDir, FileUtil.PATH_SEPARATOR); // 去除尾部分隔符
-      return strFilePath.substring(0, strFilePath.lastIndexOf(FileUtil.PATH_SEPARATOR));
+      String stdOssPath = StringUtil.removeEnd(ossPath, FileUtil.PATH_SEPARATOR); // 去除尾部分隔符
+      return stdOssPath.substring(0, stdOssPath.lastIndexOf(FileUtil.PATH_SEPARATOR));
     } catch (Exception ex) {
-      throw new OssException(String.format("获取上级目录[%s]失败", ossFileOrDir), ex);
+      throw new OssException(String.format("获取上级目录[%s]失败", ossPath), ex);
     }
   }
 
@@ -278,21 +299,13 @@ public class OssUtil {
    */
   private ClientBuilderConfiguration getDefConf() {
     ClientBuilderConfiguration ossConf = new ClientBuilderConfiguration();
-    ossConf.setMaxConnections(200); // 允许打开的最大HTTP连接数(默认为1024个)
-    ossConf.setSocketTimeout(300000); // Socket层传输数据的超时时间(默认50000毫秒)
-    ossConf.setConnectionTimeout(120000); // 建立连接的超时时间(默认50000毫秒)
-    ossConf.setConnectionRequestTimeout(60000); // 从连接池中获取连接的超时时间[单位:毫秒](默认不超时)
-    ossConf.setIdleConnectionTime(60000); // 连接空闲超时时间(默认60000毫秒)
-    ossConf.setMaxErrorRetry(20); // 失败请求重试次数(默认3次)
+    ossConf.setMaxConnections(MAX_CONNECTIONS);
+    ossConf.setSocketTimeout(SOCKET_TIMEOUT);
+    ossConf.setConnectionTimeout(CONNECTION_TIMEOUT);
+    ossConf.setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT);
+    ossConf.setIdleConnectionTime(IDLE_CONNECTION_TIME);
+    ossConf.setMaxErrorRetry(MAX_ERROR_RETRY);
     return ossConf;
-  }
-
-  /**
-   * 关闭OSS客户端
-   */
-  @PreDestroy
-  public void close() {
-    if (ossClient != null) ossClient.shutdown();
   }
 
 }

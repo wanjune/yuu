@@ -290,7 +290,7 @@ public class SftpUtil {
   /**
    * 删除(文件/目录)
    *
-   * @param sftpPath 文件或目录路径
+   * @param sftpPath 文件/目录路径
    */
   public void rm(final String sftpPath) {
     try {
@@ -405,7 +405,7 @@ public class SftpUtil {
   /**
    * 获取绝对路径
    *
-   * @param sftpPath SFTP路径(相对/绝对)
+   * @param sftpPath SFTP文件/目录的路径(相对/绝对)
    * @return SFTP绝对路径
    */
   private String getAbsolutePath(final String sftpPath) {
