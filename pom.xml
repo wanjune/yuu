@@ -6,21 +6,17 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.4</version>
+        <version>2.7.5</version>
         <relativePath/>
     </parent>
 
     <groupId>com.github.wanjune</groupId>
     <artifactId>yuu</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0.4</version>
+    <packaging>jar</packaging>
+    <version>1.1.0</version>
 
     <name>yuu</name>
     <description>勇</description>
-
-    <modules>
-        <module>base</module>
-    </modules>
 
     <properties>
         <java.version>1.8</java.version>
@@ -134,7 +130,55 @@
                     </excludes>
                     <!-- 使用本地JAR包 -->
                     <includeSystemScope>true</includeSystemScope>
+                    <!-- 可执行Jar文件名以[-exec]结尾 -->
+                    <classifier>exec</classifier>
                 </configuration>
+            </plugin>
+
+<!--            &lt;!&ndash; jar打包插件 &ndash;&gt;-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jar-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash; 排除打包对象 &ndash;&gt;-->
+<!--                    <excludes>-->
+<!--                        &lt;!&ndash; OSS工具类 &ndash;&gt;-->
+<!--                        <exclude>com/github/wanjune/yuu/exception/OssException.class</exclude>-->
+<!--                        <exclude>com/github/wanjune/yuu/util/OssUtil.class</exclude>-->
+<!--                    </excludes>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+
+            <!-- sources打包插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- javadoc打包插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalJOptions>
+                        <additionalJOption>-Xdoclint:none</additionalJOption>
+                    </additionalJOptions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
