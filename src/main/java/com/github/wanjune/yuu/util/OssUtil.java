@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -45,6 +46,9 @@ public class OssUtil {
   // 上传分片文件大小限制(1GB)
   private static final long FILE_PART_LIMIT_LENGTH = 1 * 1024 * 1024 * 1024L;
 
+  // 文件读写缓存大小
+  private static final int BUF_SIZE = 4096;
+
   private final String bucket;
   private final OSS ossClient;
 
@@ -62,20 +66,61 @@ public class OssUtil {
   }
 
   /**
-   * OSS文件上传
+   * 文件上传至OSS
+   * <p>阿里OSS目前无法判断OSS路径是否为目录,因此只支持文件上传</p>
    *
    * @param ossFilePath   OSS文件路径
    * @param localFilePath 本地文件路径
    */
-  public void putFile(String ossFilePath, String localFilePath) throws Exception {
+  public void upload(String localFilePath, String ossFilePath) throws Exception {
+
+    if (!FileUtil.isExists(localFilePath)) throw new OssException(String.format("上传文件[%s]不存在", localFilePath));
+
+    if (FileUtil.isDir(localFilePath)) throw new OssException(String.format("不支持目录[%s]上传", localFilePath));
+
     try {
       if (new File(localFilePath).length() <= FILE_SINGLE_LIMIT_LENGTH) {
-        putFileSingle(ossFilePath, localFilePath);
+        ossClient.putObject(new PutObjectRequest(this.bucket, ossFilePath, new File(localFilePath), this.getDefMetadata()));
       } else {
         putFilePart(ossFilePath, localFilePath);
       }
     } catch (Exception ex) {
-      throw new OssException(String.format("上传文件[%s]失败", ossFilePath), ex);
+      throw new OssException(String.format("上传文件[%s]失败", localFilePath), ex);
+    }
+  }
+
+  /**
+   * OSS文件下载至本地
+   * <p>阿里OSS目前无法判断OSS路径是否为目录,因此只支持文件上传</p>
+   *
+   * @param ossFilePath   OSS文件路径
+   * @param localFilePath 本地文件路径
+   */
+  public void download(String ossFilePath, String localFilePath) throws Exception {
+
+    if (!isExists(ossFilePath)) throw new OssException(String.format("下载文件[%s]不存在", ossFilePath));
+    if (ListUtil.isEmpty(listFiles(ossFilePath))) throw new OssException(String.format("不支持[%s]目录下载", ossFilePath));
+
+    InputStream ossInputStream = null;
+    BufferedOutputStream localOutputStream = null;
+    try {
+      // 读取OSS文件
+      ossInputStream = ossClient.getObject(this.bucket, ossFilePath).getObjectContent();
+
+      // 写入本地文件
+      if (ossInputStream != null) {
+        byte[] bytes = new byte[BUF_SIZE];
+        int len;
+        // 写入输出流
+        while ((len = ossInputStream.read(bytes)) > 0) localOutputStream.write(bytes, 0, len);
+        // 关闭输入的文件流
+        ossInputStream.close();
+      }
+    } catch (Exception ex) {
+      throw new OssException(String.format("下载文件[%s]失败", ossFilePath), ex);
+    } finally {
+      if (ossInputStream != null) ossInputStream.close();
+      if (localOutputStream != null) localOutputStream.close();
     }
   }
 
@@ -86,56 +131,38 @@ public class OssUtil {
    */
   public void deleteFile(String ossFilePath) {
     try {
-      deleteObject(ossFilePath);
+      if (isExists(ossFilePath)) ossClient.deleteObject(this.bucket, ossFilePath);
     } catch (Exception ex) {
       throw new OssException(String.format("删除文件[%s]失败", ossFilePath), ex);
     }
   }
 
   /**
-   * OSS目录删除
+   * OSS目录删除(目录及目录内所有文件)
    *
    * @param ossDirPath OSS目录路径
    */
   public void deleteDir(String ossDirPath) {
+
+    String reOssDirPath = StringUtil.removeEnd(ossDirPath, FileUtil.PATH_SEPARATOR) + FileUtil.PATH_SEPARATOR;
+    if (!isExists(reOssDirPath)) return;
+
     try {
-      List<String> objPaths = this.listDir(ossDirPath);
-      if (ListUtil.notEmpty(objPaths)) {
-        for (String objPath : objPaths) {
-          deleteFile(objPath);
+      String nextMarker = null;
+      ObjectListing objectListing = null;
+      List<String> listObjects = new ArrayList<>();
+      do {
+        objectListing = ossClient.listObjects(new ListObjectsRequest(this.bucket).withPrefix(reOssDirPath).withMarker(nextMarker));
+        if (objectListing.getObjectSummaries().size() > 0) {
+          for (OSSObjectSummary item : objectListing.getObjectSummaries()) {
+            listObjects.add(item.getKey());
+          }
+          ossClient.deleteObjects(new DeleteObjectsRequest(this.bucket).withKeys(listObjects));
         }
-      }
-      deleteObject(ossDirPath);
+        nextMarker = objectListing.getNextMarker();
+      } while (objectListing.isTruncated());
     } catch (Exception ex) {
       throw new OssException(String.format("删除目录[%s]失败", ossDirPath), ex);
-    }
-  }
-
-  /**
-   * 删除OSS文件/目录
-   *
-   * @param ossPath OSS文件路径
-   */
-  private void deleteObject(String ossPath) {
-    ossClient.deleteObject(this.bucket, ossPath);
-  }
-
-  /**
-   * OSS文件单个上传
-   *
-   * @param ossPath   OSS文件路径
-   * @param localPath 本地文件路径
-   */
-  private void putFileSingle(String ossPath, String localPath) throws Exception {
-    try {
-      PutObjectRequest putObjectSimpleRequest = new PutObjectRequest(this.bucket, ossPath, new File(localPath));
-      putObjectSimpleRequest.setMetadata(this.getDefMetadata());
-      this.ossClient.putObject(putObjectSimpleRequest);
-
-      log.info(String.format("[%s]OSS上传文件[%s]->[%s]正常结束!", "putObjectSimple", localPath, ossPath));
-    } catch (Exception ex) {
-      log.error(String.format("[%s]OSS上传文件[%s]->[%s]发生异常!", "putObjectSimple", localPath, ossPath), ex);
-      throw ex;
     }
   }
 
@@ -147,107 +174,99 @@ public class OssUtil {
    */
   private void putFilePart(String ossPath, String localPath) throws Exception {
 
-    String uploadId = null;
+    String partUploadId = null;
+    InputStream localInputStream = null;
 
     try {
-      InitiateMultipartUploadRequest putObjectPartRequest = new InitiateMultipartUploadRequest(this.bucket, ossPath);
-      putObjectPartRequest.setObjectMetadata(this.getDefMetadata());
-
       // 初始化分片
-      InitiateMultipartUploadResult uploadResult = ossClient.initiateMultipartUpload(putObjectPartRequest);
-      uploadId = uploadResult.getUploadId();
+      partUploadId = ossClient.initiateMultipartUpload(
+          new InitiateMultipartUploadRequest(this.bucket, ossPath, this.getDefMetadata())).getUploadId();
       List<PartETag> partETagList = new ArrayList<>();
 
       // 计算分片
       final File localFile = new File(localPath);
       long localFileLen = localFile.length();
+
       int partCount = (int) (localFileLen / FILE_PART_LIMIT_LENGTH);
-      if (localFileLen % FILE_PART_LIMIT_LENGTH != 0) {
-        partCount++;
-      }
+      if (localFileLen % FILE_PART_LIMIT_LENGTH != 0) partCount++;
 
       // 遍历分片上传
       UploadPartRequest uploadPartRequest;
       UploadPartResult uploadPartResult;
-      long startPos, curPartSize;
+      long startPos, partSize;
       for (int i = 0; i < partCount; i++) {
         startPos = i * FILE_PART_LIMIT_LENGTH;
-        curPartSize = (i + 1 == partCount) ? (localFileLen - startPos) : FILE_PART_LIMIT_LENGTH;
+        partSize = (i + 1 == partCount) ? (localFileLen - startPos) : FILE_PART_LIMIT_LENGTH;
 
-        InputStream instream = new FileInputStream(localFile);
-        instream.skip(startPos);
+        localInputStream = new FileInputStream(localFile);
+        localInputStream.skip(startPos);
 
         uploadPartRequest = new UploadPartRequest();
         uploadPartRequest.setBucketName(this.bucket);
         uploadPartRequest.setKey(ossPath);
-        uploadPartRequest.setUploadId(uploadId);
-        uploadPartRequest.setInputStream(instream);
-        uploadPartRequest.setPartSize(curPartSize);
+        uploadPartRequest.setUploadId(partUploadId);
+        uploadPartRequest.setInputStream(localInputStream);
+        uploadPartRequest.setPartSize(partSize);
         uploadPartRequest.setPartNumber(i + 1); // 设置分片号,范围是1~10000
-        uploadPartResult = this.ossClient.uploadPart(uploadPartRequest);
+        uploadPartResult = ossClient.uploadPart(uploadPartRequest);
         // 保存OSS的返回结果结果中的PartETag
         partETagList.add(uploadPartResult.getPartETag());
       }
 
       // 分片合并为一个文件的文件
-      ossClient.completeMultipartUpload(new CompleteMultipartUploadRequest(this.bucket, ossPath, uploadId, partETagList));
-
-      log.info(String.format("[%s]OSS分片上传文件[%s]->[%s]正常结束!", "putObjectPart", localPath, ossPath));
+      ossClient.completeMultipartUpload(new CompleteMultipartUploadRequest(this.bucket, ossPath, partUploadId, partETagList));
     } catch (Exception ex) {
-      log.error(String.format("[%s]OSS分片上传文件,[%s]->[%s]发生异常!", "putObjectPart", localPath, ossPath), ex);
+      log.error(String.format("[%s]OSS分片上传文件[%s]->[%s]发生异常!", "putFilePart", localPath, ossPath), ex);
 
       // 取消分片上传
-      if (StringUtil.notBlank(uploadId)) {
+      if (StringUtil.notBlank(partUploadId)) {
         try {
-          ListPartsRequest listPartsRequest = new ListPartsRequest(this.bucket, ossPath, uploadId);
+          ListPartsRequest listPartsRequest = new ListPartsRequest(this.bucket, ossPath, partUploadId);
           listPartsRequest.setMaxParts(100);
           listPartsRequest.setPartNumberMarker(1);
           PartListing partListing = ossClient.listParts(listPartsRequest);
-
           // 如果分片数据已上传了 -> 删除数据
           if (partListing.getParts().size() > 0) {
-            ossClient.abortMultipartUpload(new AbortMultipartUploadRequest(this.bucket, ossPath, uploadId));
-            log.info(String.format("[%s]取消文件分片上传[%s]->[%s]正常结束!", "putObjectPart", localPath, ossPath));
+            ossClient.abortMultipartUpload(new AbortMultipartUploadRequest(this.bucket, ossPath, partUploadId));
           }
         } catch (Exception amuEx) {
-          log.error(String.format("[%s]取消文件分片上传,发生异常!", "putObjectPart"), amuEx);
+          log.error(String.format("[%s]OSS分片上传文件[%s]发生异常,进行取消文件分片上传处理也发生了异常!", "putFilePart"), amuEx);
         }
       }
 
       throw ex;
+    } finally {
+      if (localInputStream != null) localInputStream.close();
     }
 
   }
 
   /**
-   * 获取指定目录下所有目录和文件的路径
+   * 获取目录下文件(路径)列表
    *
    * @param ossDirPath OSS目录路径
    * @return 目录和文件路径列表
    */
-  private List<String> listDir(String ossDirPath) {
-
-    List<String> listObjPath = null;
-
+  private List<String> listFiles(String ossDirPath) {
+    String reOssDirPath = StringUtil.removeEnd(ossDirPath, FileUtil.PATH_SEPARATOR);
+    List<String> listObjects = null;
     try {
-      ListObjectsV2Result listObjectsV2Result = ossClient.listObjectsV2(this.bucket, ossDirPath);
+      ListObjectsV2Result listObjectsV2Result = ossClient.listObjectsV2(this.bucket, reOssDirPath);
 
       if (listObjectsV2Result != null) {
         List<OSSObjectSummary> listOssObj = listObjectsV2Result.getObjectSummaries();
-
         if (ListUtil.notEmpty(listOssObj)) {
-          listObjPath = new ArrayList<>();
+          listObjects = new ArrayList<>();
           for (OSSObjectSummary item : listOssObj) {
-            listObjPath.add(item.getKey());
+            listObjects.add(item.getKey());
           }
         }
       }
     } catch (Exception ex) {
-      log.error(String.format("[%s]获取目录[%s]内容,发生异常!", "listDir", ossDirPath), ex);
-      throw ex;
+      log.error(String.format("[%s]获取目录[%s]下文件路径列表发生异常!", "listFiles", ossDirPath), ex);
     }
 
-    return listObjPath;
+    return listObjects;
   }
 
   /**

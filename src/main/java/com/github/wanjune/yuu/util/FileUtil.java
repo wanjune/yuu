@@ -51,7 +51,22 @@ public class FileUtil {
     try {
       return new File(path).exists();
     } catch (Exception ex) {
-      throw new YuuException(String.format("判断文件[%s]是否存失败", path), ex);
+      throw new YuuException(String.format("判断文件/目录[%s]是否存在失败", path), ex);
+    }
+  }
+
+  /**
+   * 是否是目录
+   *
+   * @param path 文件/目录路径
+   * @return 判断结果
+   */
+  public static boolean isDir(final String path) {
+    try {
+      if (isExists(path)) return new File(path).isDirectory();
+      return false;
+    } catch (Exception ex) {
+      throw new YuuException(String.format("判断路径[%s]是否是目录失败", path), ex);
     }
   }
 
@@ -160,7 +175,7 @@ public class FileUtil {
   /**
    * 获取目录下文件路径列表
    *
-   * @param dirPath     指定的目录路径
+   * @param dirPath     目录路径
    * @param fileExtList 扩展名列表(null->所有文件)
    * @return 目录下的文件列表
    */
@@ -211,14 +226,14 @@ public class FileUtil {
       FileUtil.delete(FileUtil.create(combineFilePath));
 
       outputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(combineFilePath)));
-      byte[] buffer = new byte[BUF_SIZE];
-      int bufLen;
+      byte[] bytes = new byte[BUF_SIZE];
+      int len;
 
       for (int i = 0; i < filePathList.size(); i++) {
-        // 读取文件流
+        // 读取文件
         inputStream = new BufferedInputStream(Files.newInputStream(Paths.get(filePathList.get(i))));
         // 合并文件
-        while ((bufLen = inputStream.read(buffer)) > 0) outputStream.write(buffer, 0, bufLen);
+        while ((len = inputStream.read(bytes)) > 0) outputStream.write(bytes, 0, len);
         // 换新行
         if (isNewLine && i != filePathList.size() - 1) outputStream.write(LINE_SEPARATOR);
         // 关闭输入的文件流

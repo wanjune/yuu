@@ -36,7 +36,7 @@ public class MapUtil {
   }
 
   /**
-   * 取得指定键的值
+   * 取得键的值
    *
    * @param map Map对象
    * @param key 键
@@ -47,7 +47,7 @@ public class MapUtil {
   }
 
   /**
-   * 取得指定键的值
+   * 取得键的值
    * <p>不存在/空,使用默认值替代</p>
    *
    * @param map          Map

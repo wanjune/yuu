@@ -110,7 +110,7 @@ public class TimeUtil {
    *
    * @param dateTimeString 日时字符串
    * @param format         日时格式
-   * @return 指定格式的日时字符串
+   * @return 日时
    */
   public static LocalDateTime parseDateTime(final String dateTimeString, final String format) {
     try {
@@ -129,11 +129,11 @@ public class TimeUtil {
   }
 
   /**
-   * 转换是日时对象
+   * 转换为日时对象
    * <p>尝试使用FMT_DT_LIST列表中格式转换</p>
    *
    * @param dateTimeString 日时字符串
-   * @return 指定格式的日时字符串
+   * @return 日时对象
    */
   public static LocalDateTime parseDateTime(final String dateTimeString) {
     LocalDateTime dateTime = null;
@@ -165,11 +165,11 @@ public class TimeUtil {
   }
 
   /**
-   * 取得指定日时格式的字符串
+   * 取得日时字符串(指定格式)
    *
-   * @param dateTime 指定日时
+   * @param dateTime 日时
    * @param format   日时格式
-   * @return 指定日时格式的字符串
+   * @return 日时字符串(指定格式)
    */
   public static String formatDateTime(final LocalDateTime dateTime, final String format) {
     try {
@@ -183,7 +183,7 @@ public class TimeUtil {
       }
       return dateTime.format(formatter);
     } catch (Exception ex) {
-      throw new YuuException(String.format("取得[%s]指定日时格式[%s]的字符串失败", dateTime, format));
+      throw new YuuException(String.format("取得[%s]日时的指定格式[%s]字符串失败", dateTime, format));
     }
   }
 
@@ -260,17 +260,17 @@ public class TimeUtil {
   }
 
   /**
-   * 取得指定日期格式的字符串
+   * 取得日期字符串(指定格式)
    *
-   * @param date   指定日期
+   * @param date   日期
    * @param format 日期格式
-   * @return 指定格式的日期字符串
+   * @return 日期字符串(指定格式)
    */
   public static String formatDate(final LocalDate date, final String format) {
     try {
       return date.format(DateTimeFormatter.ofPattern(format));
     } catch (Exception ex) {
-      throw new YuuException(String.format("取得[%s]指定日期格式[%s]的字符串失败", date, format));
+      throw new YuuException(String.format("取得[%s]日期的指定格式[%s]字符串失败", date, format));
     }
   }
 
@@ -291,7 +291,7 @@ public class TimeUtil {
   }
 
   /**
-   * 获取季度格式化字符串
+   * 获取季度字符串(指定格式)
    * <p>
    * "tt" (非法) -- 2019Q1
    * "" (空字符串) -- 2019Q1
@@ -310,9 +310,9 @@ public class TimeUtil {
    * "年:yyyy 季度:qr" -- 年:2018 季度:2
    * </p>
    *
-   * @param date     指定日期
+   * @param date     日期
    * @param qrFormat 季度格式
-   * @return 指定格式的季度字符串
+   * @return 季度字符串(指定格式)
    */
   @SuppressWarnings("ALL")
   public static String getQuarterFormat(final LocalDate date, final String qrFormat) {

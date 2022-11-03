@@ -9,7 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -64,7 +67,6 @@ public class SftpUtil {
   /**
    * SFTP快速下载(文件/目录)
    * <p>无需实例化SftpUtil类;其他复杂功能->实例化SftpUtil类并自行组装</p>
-   * <p>通过下载的保存目录来判断->SFTP目录是否存在</p>
    *
    * @param host                SFTP主机
    * @param port                SFTP端口
@@ -74,7 +76,7 @@ public class SftpUtil {
    * @param localPath           下载文件/目录保存路径
    * @param excludeFileNameList 排除的文件名称列表(目录下载时有效,文件下载时设置为[null])
    * @param excludeExtList      排除的扩展名(目录下载时有效,文件下载时设置为[null])
-   * @param isClearFirst        是否需要在下载前删除本地文件或目录
+   * @param isClearFirst        是否在下载前删除本地文件或目录
    */
   public static void quickGet(final String host, final String port, final String username, final String password,
                               final String sftpPath, final String localPath,
@@ -95,14 +97,13 @@ public class SftpUtil {
     } catch (Exception ex) {
       throw new SftpException(String.format("下载文件/目录[%s]失败", sftpPath), ex);
     } finally {
-      if (sftpUtil != null) sftpUtil.closeChannel(); // 通道SFTP关闭
+      if (sftpUtil != null) sftpUtil.closeChannel(); // 关闭SFTP通道
     }
   }
 
   /**
    * SFTP快速上传(文件/目录)
    * <p>无需实例化SftpUtil类;其他复杂功能->实例化SftpUtil类并自行组装</p>
-   * <p>通过上传文件目录来判断->是否可以有上传数据</p>
    *
    * @param host                SFTP主机
    * @param port                SFTP端口
@@ -112,7 +113,7 @@ public class SftpUtil {
    * @param sftpPath            SFTP保存/目录文件路径
    * @param excludeFileNameList 排除的文件名称列表(目录下载时有效,文件下载时设置为[null])
    * @param excludeExtList      排除的扩展名(目录下载时有效,文件下载时设置为[null])
-   * @param isClearFirst        是否需要在上传前删除SFTP文件或目录
+   * @param isClearFirst        是否在上传前删除SFTP文件或目录
    */
   public static void quickPut(final String host, final String port, final String username, final String password,
                               final String localPath, final String sftpPath,
@@ -132,7 +133,7 @@ public class SftpUtil {
     } catch (Exception ex) {
       throw new SftpException(String.format("上传文件/目录[%s]失败", localPath), ex);
     } finally {
-      if (sftpUtil != null) sftpUtil.closeChannel(); // 通道SFTP关闭
+      if (sftpUtil != null) sftpUtil.closeChannel(); // 关闭SFTP通道
     }
   }
 
@@ -192,7 +193,7 @@ public class SftpUtil {
       return;
     }
 
-    OutputStream dfOutputStream = null;
+    OutputStream localOutputStream = null;
     try {
       if (this.isDir(sftpAbsPath)) {
         /*
@@ -212,16 +213,16 @@ public class SftpUtil {
         /*
          * 文件下载(覆盖模式)
          */
-        dfOutputStream = new FileOutputStream(FileUtil.create(localPath), false);
-        channelSftp.get(sftpAbsPath, dfOutputStream);
-        dfOutputStream.close();
+        localOutputStream = new FileOutputStream(FileUtil.create(localPath), false);
+        channelSftp.get(sftpAbsPath, localOutputStream);
+        localOutputStream.close();
         log.info(String.format("[%s]SFTP下载(文件)完成: [%s] -> [%s]", "get", sftpAbsPath, localPath));
       }
     } catch (Exception ex) {
       throw new SftpException(String.format("下载文件/目录[%s]失败", sftpAbsPath), ex);
     } finally {
-      if (dfOutputStream != null) {
-        dfOutputStream.close();
+      if (localOutputStream != null) {
+        localOutputStream.close();
       }
     }
 
@@ -246,7 +247,7 @@ public class SftpUtil {
     }
 
     File localFile = new File(localPath);
-    InputStream dfInputStream = null;
+    InputStream localInputStream = null;
 
     String sftpAbsPath = getAbsolutePath(sftpPath);
 
@@ -276,16 +277,16 @@ public class SftpUtil {
         if (!isExists(sftDirPath)) channelSftp.mkdir(sftDirPath);
         // 切换至SFTP上传目录
         channelSftp.cd(sftDirPath);
-        dfInputStream = Files.newInputStream(localFile.toPath());
+        localInputStream = Files.newInputStream(localFile.toPath());
         // 文件上传(覆盖模式)
-        channelSftp.put(dfInputStream, new String(localFile.getName().getBytes(), StandardCharsets.UTF_8));
+        channelSftp.put(localInputStream, new String(localFile.getName().getBytes(), StandardCharsets.UTF_8));
         log.info(String.format("[%s]SFTP上传(文件)完成: [%s] -> [%s]", "put", localPath, sftpAbsPath));
       }
     } catch (Exception ex) {
       throw new SftpException(String.format("上传文件/目录[%s]失败", sftpAbsPath), ex);
     } finally {
-      if (dfInputStream != null) {
-        dfInputStream.close();
+      if (localInputStream != null) {
+        localInputStream.close();
       }
     }
 
