@@ -123,6 +123,17 @@ public class FileUtil {
   }
 
   /**
+   * 获取目录标准路径
+   * <p>去除目录路径中的尾部的反斜杠</p>
+   *
+   * @param dirPath 目录路径
+   * @return 目录标准路径
+   */
+  public static String getDirPath(String dirPath) {
+    return StringUtil.isEmpty(dirPath) ? StringUtil.EMPTY : StringUtil.removeEnd(dirPath, FileUtil.PATH_SEPARATOR);
+  }
+
+  /**
    * 获取文件/目录上级目录路径
    *
    * @param path 文件路径
@@ -186,7 +197,7 @@ public class FileUtil {
 
       if (dir.exists() && dir.isDirectory()) {
         File[] fileArrays = dir.listFiles();
-        if (fileArrays != null && fileArrays.length > 0) {
+        if (fileArrays != null) {
           for (File iFile : fileArrays) {
             if (!iFile.getName().startsWith(NAME_EXCLUDE_PREFIX)) {
               if (ListUtil.isEmpty(fileExtList)) {

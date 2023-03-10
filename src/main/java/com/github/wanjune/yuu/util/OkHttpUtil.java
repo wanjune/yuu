@@ -3,7 +3,6 @@ package com.github.wanjune.yuu.util;
 import com.github.wanjune.yuu.exception.OkHttpException;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import java.util.Map;
  * @author wanjune
  * @since 2020-07-27
  */
-@Component
 @Slf4j
 @SuppressWarnings("all")
 public class OkHttpUtil {
@@ -31,6 +29,7 @@ public class OkHttpUtil {
 
   private final OkHttpClient okHttpClient;
   private boolean isPrintLog;
+  private String resBody;
 
   public OkHttpUtil(OkHttpClient okHttpClient, boolean isPrintLog) {
     this.okHttpClient = okHttpClient;
@@ -58,53 +57,58 @@ public class OkHttpUtil {
                         String body) throws Exception {
 
     // 完整请求地址(包含URL部参数)
-    StringBuilder sbUrlFull = new StringBuilder(url);
-    // 接口响应信息Body内容
-    String strResBody = NOT_RESPONDING;
+    StringBuilder apiUrl = new StringBuilder(url);
+    // 接口响应信息-Body内容
+    String resBody = NOT_RESPONDING;
+    // 接口响应信息-HTTP status code(99是不存在的,如果响应CODE=99->发生了异常)
+    int resCode = 99;
 
     try {
+      /**
+       * 请求参数构建
+       */
       // Request构建器
       Request.Builder reqBuilder = new Request.Builder();
-
-      // URL处理
+      // URL拼接参数
       if (MapUtil.notEmpty(params)) {
         boolean isFirst = true;
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-          sbUrlFull.append(isFirst ? "?" : "&").append(entry.getKey()).append("=").append(entry.getValue());
+          apiUrl.append(isFirst ? "?" : "&").append(entry.getKey()).append("=").append(entry.getValue());
           isFirst = false;
         }
       }
-
-      // Header
+      // Header创建
       if (MapUtil.notEmpty(headers)) {
         for (Map.Entry<String, String> entry : headers.entrySet()) {
           reqBuilder.addHeader(entry.getKey(), entry.getValue());
         }
       }
-
-      // Body
+      // Body创建
       RequestBody reqBody = null;
-      if (StringUtil.notBlank(body) && StringUtil.notBlank(mediaType)) {
+      if (StringUtil.notBlank(body) && StringUtil.notBlank(mediaType))
         reqBody = RequestBody.create(body, MediaType.parse(mediaType));
+
+      /**
+       * 执行请求
+       */
+      Response response = okHttpClient.newCall(reqBuilder.url(apiUrl.toString()).method(method, reqBody).build()).execute();
+      if (response.body() != null) {
+        resCode = response.code();
+        resBody = response.body().string();
       }
 
-      // 执行请求
-      try (Response response = okHttpClient.newCall(reqBuilder.url(sbUrlFull.toString()).method(method, reqBody).build()).execute()) {
-        if (response.body() != null) {
-          strResBody = response.body().string();
-        }
-      }
-
-      // 请求数据详情日志
+      /**
+       * 详细日志
+       */
       if (isPrintLog)
-        log.info(String.format("[%s]外部接口请求详情\n[url]:\t%s\n[method]:\t%s\n[headers]:\t%s\n[body]:\t%s\n[响应body]:\t%s", "execute", sbUrlFull.toString(), method, headers, body, strResBody));
+        log.info(String.format("[%s]详细日志\n[请求url]:\t%s\n[method]:\t%s\n[headers]:\t%s\n[body]:\t%s\n[响应CODE]:\t%s\n[body]:\t%s", "execute", apiUrl.toString(), method, headers, body, resCode, resBody));
 
-      return strResBody;
+      return resBody;
     } catch (Exception ex) {
       if (isPrintLog)
-        log.error(String.format("[%s]外部接口请求发生异常!\n[url]:\t%s\n[method]:\t%s\n[headers]:\t%s\n[body]:\t%s\n[响应body]:\t%s", "execute", sbUrlFull.toString(), method, headers, body, strResBody), ex);
+        log.error(String.format("[%s]发生异常!\n[请求url]:\t%s\n[method]:\t%s\n[headers]:\t%s\n[body]:\t%s\n[响应CODE]:\t%s\n[body]:\t%s", "execute", apiUrl.toString(), method, headers, body, resCode, resBody), ex);
 
-      throw new OkHttpException(String.format("外部接口请求失败[url:%s,method:%s,headers:%s,body:%s,响应body:%s]", sbUrlFull.toString(), method, headers, body, strResBody), ex);
+      throw new OkHttpException(String.format("请求失败[请求url:%s,method:%s,headers:%s,body:%s,响应CODE:%s,body:%s]", apiUrl.toString(), method, headers, body, resCode, resBody), ex);
     }
 
   }
