@@ -34,6 +34,6 @@
 > <dependency>
 >     <groupId>com.github.wanjune</groupId>
 >     <artifactId>yuu</artifactId>
->     <version>${yuu.version}</version>
+>     <version>1.0.5</version>
 > </dependency>
 > ```
