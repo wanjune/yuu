@@ -1,18 +1,16 @@
 package com.github.wanjune.yuu.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 @Slf4j
 class OssUtilTest {
-  private static final String ENDPOINT="";
-  private static final String ACCESSKEY_ID="";
-  private static final String ACCESSKEY_SECRET="";
-  private static final String BUCKET="";
+  private static final String ENDPOINT = "";
+  private static final String ACCESSKEY_ID = "";
+  private static final String ACCESSKEY_SECRET = "";
+  private static final String BUCKET = "";
 
   private static OssUtil ossUtil;
 

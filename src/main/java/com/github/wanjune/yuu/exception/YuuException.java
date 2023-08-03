@@ -4,8 +4,10 @@ package com.github.wanjune.yuu.exception;
 import com.github.wanjune.yuu.model.MessageModel;
 import com.github.wanjune.yuu.util.JsonUtil;
 import com.github.wanjune.yuu.value.Messageable;
+import lombok.Getter;
 import lombok.SneakyThrows;
 
+@Getter
 public class YuuException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   private MessageModel messageModel = null;
@@ -32,10 +34,6 @@ public class YuuException extends RuntimeException {
 
   public YuuException(Messageable message, Object obj) {
     this.messageModel = new MessageModel(message, obj);
-  }
-
-  public MessageModel getMessageModel() {
-    return messageModel;
   }
 
   @Override
